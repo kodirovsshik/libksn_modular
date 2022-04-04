@@ -1,11 +1,11 @@
 
 export module test;
 
-#define _KSN_EXPORT_BEGIN export namespace ksn {
-#define _KSN_EXPORT_END }
 
-#define _KSN_BEGIN namespace ksn{
-#define _KSN_END }
+
+import <ksn/ksn.hpp>;
+
+
 
 
 
