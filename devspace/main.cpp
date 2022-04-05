@@ -1,8 +1,8 @@
 
-import test;
+import libksn.color;
 
 
 int main()
 {
-	constexpr int x = ksn::foo(1);
+	ksn::color_bgr_t c;
 }

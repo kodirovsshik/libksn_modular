@@ -1,11 +1,7 @@
 
 export module test;
 
-
-
 import <ksn/ksn.hpp>;
-
-
 
 
 
