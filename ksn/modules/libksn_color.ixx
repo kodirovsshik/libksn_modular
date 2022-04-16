@@ -3,6 +3,8 @@ export module libksn.color;
 
 import <ksn/ksn.hpp>;
 import <concepts>;
+import <algorithm>;
+import <stdint.h>;
 
 
 
@@ -43,13 +45,33 @@ public:
 	int16_t m_hue; //[-360; 360]
 	uint8_t m_saturation; //[0; 100]
 	uint8_t m_value; //[0; 100]
-	uint8_t alpha; //[0; 255]
+	uint8_t m_alpha; //[0; 255]
+
+	constexpr void hue(int16_t x) noexcept;
+	constexpr void saturation(uint8_t x) noexcept;
+	constexpr void value(uint8_t x) noexcept;
+	constexpr void alpha(uint8_t x) noexcept;
+
+	constexpr int16_t hue() const noexcept;
+	constexpr uint8_t saturation() const noexcept;
+	constexpr uint8_t value() const noexcept;
+	constexpr uint8_t alpha() const noexcept;
 };
 
 struct generic_color_hsv_packed
 {
 public:
 	uint32_t data;
+
+	constexpr void hue(int16_t x) noexcept;
+	constexpr void saturation(uint8_t x) noexcept;
+	constexpr void value(uint8_t x) noexcept;
+	constexpr void alpha(uint8_t x) noexcept;
+
+	constexpr int16_t hue() const noexcept;
+	constexpr uint8_t saturation() const noexcept;
+	constexpr uint8_t value() const noexcept;
+	constexpr uint8_t alpha() const noexcept;
 };
 
 
@@ -120,7 +142,6 @@ struct color_rgb_t;
 struct color_rgba_t;
 struct color_hsv_t;
 struct color_hsva_t;
-struct color_hsv_packed_t;
 struct color_hsva_packed_t;
 
 
@@ -131,7 +152,7 @@ struct color_bgr_t
 
 
 	constexpr color_bgr_t() noexcept;
-	constexpr color_bgr_t(uint8_t r, uint8_t g, uint8_t b) noexcept;
+	constexpr color_bgr_t(uint8_t b, uint8_t g, uint8_t r) noexcept;
 	constexpr color_bgr_t(uint32_t hex) noexcept;
 
 	template<color color_t>
@@ -164,8 +185,8 @@ struct color_bgra_t
 	};
 
 	constexpr color_bgra_t() noexcept;
-	constexpr color_bgra_t(uint8_t r, uint8_t g, uint8_t b) noexcept;
-	constexpr color_bgra_t(uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept;
+	constexpr color_bgra_t(uint8_t b, uint8_t g, uint8_t r) noexcept;
+	constexpr color_bgra_t(uint8_t b, uint8_t g, uint8_t r, uint8_t a) noexcept;
 	constexpr color_bgra_t(uint32_t hex) noexcept;
 	constexpr color_bgra_t(uint32_t value, int unused) noexcept;
 
@@ -240,9 +261,6 @@ struct color_rgba_t
 	constexpr color_rgba_t& operator=(const color_rgba_t&) noexcept = default;
 	constexpr color_rgba_t& operator=(color_rgba_t&&) noexcept = default;
 
-	constexpr uint32_t rgba() const noexcept;
-	constexpr uint32_t bgra() const noexcept;
-
 	constexpr uint8_t red() const noexcept;
 	constexpr uint8_t green() const noexcept;
 	constexpr uint8_t blue() const noexcept;
@@ -254,9 +272,9 @@ struct color_rgba_t
 
 struct color_hsv_t
 {
-	int16_t m_hue; //0 - 359
-	uint8_t m_saturation; //0 - 100
-	uint8_t m_value; //0 - 100
+	int16_t m_hue; //[-360; 360]
+	uint8_t m_saturation; //[0; 100]
+	uint8_t m_value; //[0; 100]
 
 
 	constexpr int16_t hue() const noexcept;
@@ -287,75 +305,10 @@ struct color_hsv_t
 
 struct color_hsva_t
 {
-	int16_t m_hue; //0 - 359
-	uint8_t m_saturation; //0 - 100
-	uint8_t m_value; //0 - 100
-	uint8_t m_alpha; //0 - 255
-
-
-
-	constexpr int16_t hue() const noexcept;
-	constexpr uint8_t saturation() const noexcept;
-	constexpr uint8_t value() const noexcept;
-	constexpr uint8_t alpha() const noexcept;
-
-	constexpr void hue(uint16_t hue) noexcept;
-	constexpr void saturation(uint8_t saturation) noexcept;
-	constexpr void value(uint8_t value) noexcept;
-	constexpr void alpha(uint8_t alpha) const noexcept;
-
-
-
-	constexpr color_hsva_t() noexcept;
-	constexpr color_hsva_t(uint16_t hue, uint8_t saturation, uint8_t value) noexcept;
-
-	template<color color_t>
-	constexpr color_hsva_t(color_t other) noexcept;
-
-	constexpr color_hsva_t(const color_hsva_t&) noexcept = default;
-	constexpr color_hsva_t(color_hsva_t&&) noexcept = default;
-
-};
-
-
-struct color_hsv_packed_t
-{
-	//uint16_t hue : 10; //0 - 359
-	//uint8_t saturation : 7; //0-100
-	//uint8_t value : 7; //0-100
-	//24 bits total
-
-	//What was the point of introducing a bit fields in the language if they are not packed
-
-	uint8_t m_data[3];
-
-
-
-	constexpr int16_t hue() const noexcept;
-	constexpr uint8_t saturation() const noexcept;
-	constexpr uint8_t value() const noexcept;
-
-	constexpr void hue(int16_t hue) noexcept;
-	constexpr void saturation(uint8_t saturation) noexcept;
-	constexpr void value(uint8_t value) noexcept;
-
-
-
-	constexpr color_hsv_packed_t() noexcept;
-	constexpr color_hsv_packed_t(int16_t hue, uint8_t saturation, uint8_t value) noexcept;
-
-	template<color color_t>
-	constexpr color_hsv_packed_t(color_t other) noexcept;
-
-	constexpr color_hsv_packed_t(const color_hsv_packed_t&) noexcept = default;
-	constexpr color_hsv_packed_t(color_hsv_packed_t&&) noexcept = default;
-
-};
-
-
-struct color_hsva_packed_t
-{
-	uint32_t m_data;
+	int16_t m_hue; //[-360; 360]
+	uint8_t m_saturation; //[0; 100]
+	uint8_t m_value; //[0; 100]
+	uint8_t m_alpha; //[0; 255]
 
 
 
@@ -371,9 +324,39 @@ struct color_hsva_packed_t
 
 
 
+	constexpr color_hsva_t() noexcept;
+	constexpr color_hsva_t(uint16_t hue, uint8_t saturation, uint8_t value, uint8_t alpha) noexcept;
+
+	template<color color_t>
+	constexpr color_hsva_t(color_t other) noexcept;
+
+	constexpr color_hsva_t(const color_hsva_t&) noexcept = default;
+	constexpr color_hsva_t(color_hsva_t&&) noexcept = default;
+
+	constexpr generic_color_hsv to_generic_hsv() const noexcept;
+};
+
+
+struct color_hsva_packed_t
+{
+	uint32_t m_data;
+
+
+	constexpr int16_t hue() const noexcept;
+	constexpr uint8_t saturation() const noexcept;
+	constexpr uint8_t value() const noexcept;
+	constexpr uint8_t alpha() const noexcept;
+
+	constexpr void hue(int16_t hue) noexcept;
+	constexpr void saturation(uint8_t saturation) noexcept;
+	constexpr void value(uint8_t value) noexcept;
+	constexpr void alpha(uint8_t alpha) noexcept;
+
+
+
 	constexpr color_hsva_packed_t() noexcept;
-	constexpr color_hsva_packed_t(uint16_t hue, uint8_t saturation, uint8_t value) noexcept;
-	constexpr color_hsva_packed_t(uint16_t hue, uint8_t saturation, uint8_t value, uint8_t alpha) noexcept;
+	constexpr color_hsva_packed_t(int16_t hue, uint8_t saturation, uint8_t value) noexcept;
+	constexpr color_hsva_packed_t(int16_t hue, uint8_t saturation, uint8_t value, uint8_t alpha) noexcept;
 
 	template<color color_t>
 	constexpr color_hsva_packed_t(color_t other) noexcept;
@@ -381,10 +364,32 @@ struct color_hsva_packed_t
 	constexpr color_hsva_packed_t(const color_hsva_packed_t&) noexcept = default;
 	constexpr color_hsva_packed_t(color_hsva_packed_t&&) noexcept = default;
 
+	constexpr generic_color_hsv_packed to_generic_hsv_packed() const noexcept;
 };
 
 
 _KSN_EXPORT_END
+
+
+
+
+_KSN_EXPORT_BEGIN
+
+constexpr int16_t hsv_bound_hue(int hue) noexcept
+{
+	hue %= 360;
+	return hue;
+}
+constexpr int16_t hsv_bound_hue_positive(int hue) noexcept
+{
+	hue %= 360;
+	if (hue < 0)
+		hue += 360;
+	return hue;
+}
+
+_KSN_EXPORT_END
+
 
 
 
@@ -442,7 +447,119 @@ _KSN_END
 
 _KSN_BEGIN
 
+constexpr void generic_color_hsv::hue(int16_t x) noexcept
+{
+	this->m_hue = x;;
+}
+constexpr void generic_color_hsv::saturation(uint8_t x) noexcept
+{
+	this->m_saturation = x;
+}
+constexpr void generic_color_hsv::value(uint8_t x) noexcept
+{
+	this->m_value = x;
+}
+constexpr void generic_color_hsv::alpha(uint8_t x) noexcept
+{
+	this->m_alpha = x;
+}
+
+constexpr int16_t generic_color_hsv::hue() const noexcept
+{
+	return this->m_hue;
+}
+constexpr uint8_t generic_color_hsv::saturation() const noexcept
+{
+	return this->m_saturation;
+}
+constexpr uint8_t generic_color_hsv::value() const noexcept
+{
+	return this->m_value;
+}
+constexpr uint8_t generic_color_hsv::alpha() const noexcept
+{
+	return this->m_alpha;
+}
+
+
+
+constexpr void generic_color_hsv_packed::hue(int16_t hue) noexcept
+{
+	this->data = hsva_packed_update_hue(this->data, hue);
+}
+constexpr void generic_color_hsv_packed::saturation(uint8_t saturation) noexcept
+{
+	this->data = hsva_packed_update_saturation(this->data, saturation);
+}
+constexpr void generic_color_hsv_packed::value(uint8_t value) noexcept
+{
+	this->data = hsva_packed_update_value(this->data, value);
+}
+constexpr void generic_color_hsv_packed::alpha(uint8_t alpha) noexcept
+{
+	this->data = hsva_packed_update_alpha(this->data, alpha);
+}
+
+constexpr int16_t generic_color_hsv_packed::hue() const noexcept
+{
+	return hsva_packed_extract_hue(this->data);
+}
+constexpr uint8_t generic_color_hsv_packed::saturation() const noexcept
+{
+	return hsva_packed_extract_saturation(this->data);
+}
+constexpr uint8_t generic_color_hsv_packed::value() const noexcept
+{
+	return hsva_packed_extract_value(this->data);
+}
+constexpr uint8_t generic_color_hsv_packed::alpha() const noexcept
+{
+	return hsva_packed_extract_alpha(this->data);
+}
+
+_KSN_END
+
+
+
+
+
+_KSN_BEGIN
+
 _KSN_DETAIL_BEGIN
+
+template<int divisor>
+constexpr int rounded_quotient_of_division_by(int dividend)
+{
+	int q = dividend / divisor;
+	int r = dividend % divisor;
+	if (r < 0)
+		r += divisor;
+	if (r > (divisor - 1) / 2)
+		q++;
+	return q;
+}
+constexpr int rounded_quotient_of_division_by(int divisor, int dividend)
+{
+	int q = dividend / divisor;
+	int r = dividend % divisor;
+	if (r < 0)
+	{
+		r += divisor;
+		q--;
+	}
+	if (r > (divisor - 1) / 2)
+		q++;
+	return q;
+}
+
+template<int divisor>
+constexpr int remainder_of_division_by(int dividend)
+{
+	dividend %= divisor;
+	if (dividend < 0)
+		dividend += divisor;
+	return dividend;
+}
 
 constexpr int _linear_360_oscilator_abs(int x)
 {
@@ -451,9 +568,7 @@ constexpr int _linear_360_oscilator_abs(int x)
 
 constexpr int linear_360_oscilator(int x)
 {
-	x %= 360;
-	if (x < 0)
-		x += 360;
+	x = remainder_of_division_by<360>(x);
 	return _linear_360_oscilator_abs(180 - x);
 }
 
@@ -465,11 +580,7 @@ constexpr int convert_hsv_rgb_oscilator(int x)
 constexpr int convert_hsv_rgb_helper(int x, int S, int V)
 {
 	x = V * (12000 - S * (120 - x));
-	int q = x / 80000;
-	int r = x % 80000;
-	if (r >= 40000)
-		q = q + 1;
-	return q;
+	return rounded_quotient_of_division_by<80000>(x);
 }
 
 _KSN_DETAIL_END
@@ -485,6 +596,35 @@ constexpr some_rgba convert_hsv_rgb(int H, int S, int V, uint8_t a)
 	rgba.g = (uint8_t)detail::convert_hsv_rgb_helper(detail::convert_hsv_rgb_oscilator(H - 180), S, V);
 	rgba.b = (uint8_t)detail::convert_hsv_rgb_helper(detail::convert_hsv_rgb_oscilator(H + 60), S, V);
 	return rgba;
+}
+
+
+template<color_some_hsv some_hsv>
+constexpr some_hsv convert_rgb_hsv(int r, int g, int b, uint8_t a)
+{
+	some_hsv result{};
+	const auto [min, max] = std::minmax({ r, g, b });
+	auto delta = max - min;
+	int h;
+	if (delta == 0)
+		h = 0;
+	else if (max == r)
+		h = detail::rounded_quotient_of_division_by(delta, detail::remainder_of_division_by<360>(60 * (g - b)));
+	else if (max == g)
+		h = detail::rounded_quotient_of_division_by(delta, 60 * (b - r)) + 120;
+	else /*if (max == b)*/
+		h = detail::rounded_quotient_of_division_by(delta, 60 * (r - g)) + 240;
+	result.hue(h);
+
+	if (max == 0)
+		result.saturation(0);
+	else
+		result.saturation(detail::rounded_quotient_of_division_by(max, delta * 100));
+
+	result.value(detail::rounded_quotient_of_division_by<255>(max * 100));
+	result.alpha(a);
+
+	return result;
 }
 
 _KSN_END
@@ -557,6 +697,69 @@ constexpr generic_color_rgb generic_color_convert_rgb1(color_t other)
 	return rgb;
 }
 
+
+
+template<class color_t>
+constexpr generic_color_hsv generic_color_convert_hsv2(color_t other) noexcept
+{
+	return {};
+}
+template<color_some_rgb color_t>
+constexpr generic_color_hsv generic_color_convert_hsv2(color_t other) noexcept
+{
+	return convert_rgb_hsv<generic_color_hsv>(other.red(), other.green(), other.blue(), other.alpha());
+}
+
+template<class color_t>
+constexpr generic_color_hsv generic_color_convert_hsv1(color_t other) noexcept
+{
+	return generic_color_convert_hsv2(other);
+}
+template<color_hsv_packed color_t>
+constexpr generic_color_hsv generic_color_convert_hsv1(color_t other) noexcept
+{
+	auto packed = other.to_generic_hsv_packed();
+
+	generic_color_hsv result;
+	result.m_hue = hsva_packed_extract_hue(packed.data);
+	result.m_saturation = hsva_packed_extract_saturation(packed.data);
+	result.m_value = hsva_packed_extract_value(packed.data);
+	result.m_alpha = hsva_packed_extract_alpha(packed.data);
+
+	return result;
+}
+
+
+
+template<class color_t>
+constexpr generic_color_hsv_packed generic_color_convert_hsv_packed2(color_t other) noexcept
+{
+	return {};
+}
+template<color_some_rgb color_t>
+constexpr generic_color_hsv_packed generic_color_convert_hsv_packed2(color_t other) noexcept
+{
+	return convert_rgb_hsv<generic_color_hsv_packed>(other.red(), other.green(), other.blue(), other.alpha());
+}
+
+template<class color_t>
+constexpr generic_color_hsv_packed generic_color_convert_hsv_packed1(color_t other) noexcept
+{
+	return detail::generic_color_convert_hsv_packed2(other);
+}
+template<color_hsv color_t>
+constexpr generic_color_hsv_packed generic_color_convert_hsv_packed1(color_t other) noexcept
+{
+	ksn::generic_color_hsv hsv = other.to_generic_hsv();
+
+	generic_color_hsv_packed result{};
+	result.data = hsva_packed_update_hue(result.data, hsv.hue());
+	result.data = hsva_packed_update_saturation(result.data, hsv.saturation());
+	result.data = hsva_packed_update_value(result.data, hsv.value());
+	result.data = hsva_packed_update_alpha(result.data, hsv.alpha());
+	return result;
+}
+
 _KSN_DETAIL_END
 
 template<class color_t>
@@ -570,15 +773,40 @@ constexpr generic_color_bgr generic_color_convert_bgr(color_t other) noexcept
 	return other.to_generic_bgr();
 }
 
+
 template<class color_t>
-constexpr generic_color_rgb generic_color_convert_rgb(color_t other)
+constexpr generic_color_rgb generic_color_convert_rgb(color_t other) noexcept
 {
 	return detail::generic_color_convert_rgb1(other);
 }
 template<color_rgb color_t>
-constexpr generic_color_rgb generic_color_convert_rgb(color_t other)
+constexpr generic_color_rgb generic_color_convert_rgb(color_t other) noexcept
 {
 	return other.to_generic_rgb();
+}
+
+
+template<class color_t>
+constexpr generic_color_hsv generic_color_convert_hsv(color_t other) noexcept
+{
+	return detail::generic_color_convert_hsv1(other);
+}
+template<color_hsv color_t>
+constexpr generic_color_hsv generic_color_convert_hsv(color_t other) noexcept
+{
+	return other.to_generic_hsv();
+}
+
+
+template<class color_t>
+constexpr generic_color_hsv_packed generic_color_convert_hsv_packed(color_t other) noexcept
+{
+	return detail::generic_color_convert_hsv_packed1(other);
+}
+template<color_hsv_packed color_t>
+constexpr generic_color_hsv_packed generic_color_convert_hsv_packed(color_t other) noexcept
+{
+	return other.to_generic_hsv_packed();
 }
 
 _KSN_END
@@ -593,7 +821,7 @@ constexpr color_bgr_t::color_bgr_t() noexcept
 {
 	this->r = this->b = this->g = 0;
 }
-constexpr color_bgr_t::color_bgr_t(uint8_t r, uint8_t g, uint8_t b) noexcept
+constexpr color_bgr_t::color_bgr_t(uint8_t b, uint8_t g, uint8_t r) noexcept
 {
 	this->b = b;
 	this->g = g;
@@ -653,14 +881,14 @@ constexpr color_bgra_t::color_bgra_t() noexcept
 {
 	this->value = 0;
 }
-constexpr color_bgra_t::color_bgra_t(uint8_t r, uint8_t g, uint8_t b) noexcept
+constexpr color_bgra_t::color_bgra_t(uint8_t b, uint8_t g, uint8_t r) noexcept
 {
 	this->b = b;
 	this->g = g;
 	this->r = r;
 	this->a = 255;
 }
-constexpr color_bgra_t::color_bgra_t(uint8_t r, uint8_t g, uint8_t b, uint8_t a) noexcept
+constexpr color_bgra_t::color_bgra_t(uint8_t b, uint8_t g, uint8_t r, uint8_t a) noexcept
 {
 	this->b = b;
 	this->g = g;
@@ -881,7 +1109,6 @@ constexpr void color_hsv_t::alpha(uint8_t) const noexcept
 
 
 
-
 constexpr color_hsv_t::color_hsv_t() noexcept
 {
 	this->m_hue = this->m_saturation = this->m_value = 0;
@@ -896,18 +1123,178 @@ constexpr color_hsv_t::color_hsv_t(uint16_t hue, uint8_t saturation, uint8_t val
 template<color color_t>
 constexpr color_hsv_t::color_hsv_t(color_t other) noexcept
 {
-	//TODO: implement generic_color_convert_hsv
-	throw;
+	auto hsv = generic_color_convert_hsv(other);
+
+	this->hue(hsv.hue());
+	this->saturation(hsv.saturation());
+	this->value(hsv.value());
+	this->alpha(other.alpha());
 }
 
 constexpr generic_color_hsv color_hsv_t::to_generic_hsv() const noexcept
 {
 	generic_color_hsv val;
-	val.m_hue = this->m_value;
+	val.m_hue = this->m_hue;
 	val.m_saturation = this->m_saturation;
 	val.m_value = this->m_value;
-	val.alpha = 255;
+	val.m_alpha = 255;
 	return val;
+}
+
+_KSN_END
+
+
+
+
+
+_KSN_BEGIN
+
+constexpr int16_t color_hsva_t::hue() const noexcept
+{
+	return this->m_hue;
+}
+constexpr uint8_t color_hsva_t::saturation() const noexcept
+{
+	return this->m_saturation;
+}
+constexpr uint8_t color_hsva_t::value() const noexcept
+{
+	return this->m_value;
+}
+constexpr uint8_t color_hsva_t::alpha() const noexcept
+{
+	return this->m_alpha;
+}
+
+constexpr void color_hsva_t::hue(uint16_t hue) noexcept
+{
+	this->m_hue = hue;
+}
+constexpr void color_hsva_t::saturation(uint8_t saturation) noexcept
+{
+	this->m_saturation = saturation;
+}
+constexpr void color_hsva_t::value(uint8_t value) noexcept
+{
+	this->m_value = value;
+}
+constexpr void color_hsva_t::alpha(uint8_t alpha) noexcept
+{
+	this->m_alpha = alpha;
+}
+
+
+
+constexpr color_hsva_t::color_hsva_t() noexcept
+{
+	this->m_hue = 0;
+	this->m_saturation = 0;
+	this->m_value = 0;
+	this->m_alpha = 0;
+}
+constexpr color_hsva_t::color_hsva_t(uint16_t hue, uint8_t saturation, uint8_t value, uint8_t alpha) noexcept
+{
+	this->m_hue = hue;
+	this->m_saturation = saturation;
+	this->m_value = value;
+	this->m_alpha = alpha;
+}
+
+template<color color_t>
+constexpr color_hsva_t::color_hsva_t(color_t other) noexcept
+{
+	auto hsv = generic_color_convert_hsv(other);
+	
+	this->hue(hsv.hue());
+	this->saturation(hsv.saturation());
+	this->value(hsv.value());
+	this->alpha(hsv.alpha());
+}
+
+constexpr generic_color_hsv color_hsva_t::to_generic_hsv() const noexcept
+{
+	generic_color_hsv result{};
+	result.m_hue = this->m_hue;
+	result.m_saturation = this->m_saturation;
+	result.m_value = this->m_value;
+	result.m_alpha = this->m_alpha;
+	return result;
+}
+
+_KSN_END
+
+
+
+
+
+_KSN_BEGIN
+
+
+constexpr int16_t color_hsva_packed_t::hue() const noexcept
+{
+	return hsva_packed_extract_hue(this->m_data);
+}
+constexpr uint8_t color_hsva_packed_t::saturation() const noexcept
+{
+	return hsva_packed_extract_saturation(this->m_data);
+}
+constexpr uint8_t color_hsva_packed_t::value() const noexcept
+{
+	return hsva_packed_extract_value(this->m_data);
+}
+constexpr uint8_t color_hsva_packed_t::alpha() const noexcept
+{
+	return hsva_packed_extract_alpha(this->m_data);
+}
+
+constexpr void color_hsva_packed_t::hue(int16_t hue) noexcept
+{
+	this->m_data = hsva_packed_update_hue(this->m_data, hue);
+}
+constexpr void color_hsva_packed_t::saturation(uint8_t saturation) noexcept
+{
+	this->m_data = hsva_packed_update_saturation(this->m_data, saturation);
+}
+constexpr void color_hsva_packed_t::value(uint8_t value) noexcept
+{
+	this->m_data = hsva_packed_update_value(this->m_data, value);
+}
+constexpr void color_hsva_packed_t::alpha(uint8_t alpha) noexcept
+{
+	this->m_data = hsva_packed_update_alpha(this->m_data, alpha);
+}
+
+
+
+constexpr color_hsva_packed_t::color_hsva_packed_t() noexcept
+{
+	this->m_data = 0;
+}
+constexpr color_hsva_packed_t::color_hsva_packed_t(int16_t hue, uint8_t saturation, uint8_t value) noexcept
+{
+	this->hue(hue);
+	this->saturation(saturation);
+	this->value(value);
+	this->alpha(255);
+}
+constexpr color_hsva_packed_t::color_hsva_packed_t(int16_t hue, uint8_t saturation, uint8_t value, uint8_t alpha) noexcept
+{
+	this->hue(hue);
+	this->saturation(saturation);
+	this->value(value);
+	this->alpha(alpha);
+}
+
+template<color color_t>
+constexpr color_hsva_packed_t::color_hsva_packed_t(color_t other) noexcept
+{
+	auto hsv = generic_color_convert_hsv_packed(other);
+	this->m_data = hsv.data;
+}
+
+constexpr generic_color_hsv_packed color_hsva_packed_t::to_generic_hsv_packed() const noexcept
+{
+	return generic_color_hsv_packed{ this->m_data };
 }
 
 _KSN_END
