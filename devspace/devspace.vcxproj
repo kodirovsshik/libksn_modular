@@ -92,6 +92,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,6 +111,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +130,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,6 +149,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\libksn_color.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_time.ixx" />
     <ClCompile Include="..\ksn\modules\test.ixx" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
