@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
@@ -107,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
@@ -145,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
@@ -162,6 +162,7 @@
     <ClCompile Include="..\ksn\modules\libksn_color.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_time.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_type_traits.ixx" />
     <ClCompile Include="..\ksn\modules\test.ixx" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
