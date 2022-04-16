@@ -23,6 +23,9 @@
     <ClCompile Include="..\ksn\modules\libksn_color.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_crc.ixx">
+      <Filter>Module Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ksn\include\ksn\ksn.hpp">

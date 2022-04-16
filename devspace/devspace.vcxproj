@@ -156,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\libksn_color.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
     <ClCompile Include="..\ksn\modules\test.ixx" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
