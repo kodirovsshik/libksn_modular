@@ -91,7 +91,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
@@ -110,7 +110,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
@@ -129,7 +129,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
@@ -148,7 +148,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalBMIDirectories>$(SolutionDir)\ksn\modules;%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
+      <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
@@ -164,6 +164,7 @@
     <ClCompile Include="..\ksn\modules\libksn_time.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_type_traits.ixx" />
     <ClCompile Include="..\ksn\modules\test.ixx" />
+    <ClCompile Include="libksn_unicode.ixx" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
