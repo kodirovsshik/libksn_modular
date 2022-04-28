@@ -80,6 +80,9 @@ struct is_any_of<T, U> : std::false_type {};
 template<class T, class ...Args>
 constexpr bool is_any_of_v = is_any_of<T, Args...>::value;
 
+template<class T, class ...Args>
+concept any_of = is_any_of_v<T, Args...>;
+
 
 
 
