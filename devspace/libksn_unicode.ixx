@@ -10,8 +10,6 @@ import <type_traits>;
 
 
 
-
-
 _KSN_EXPORT_BEGIN
 
 enum class bom : uint8_t
@@ -23,84 +21,12 @@ struct convert_result_t
 {
 	size_t read, written;
 };
-//
-//template<
-//	bool to_little_endian = std::endian::native == std::endian::little,
-//	bom use_bom = bom::keep,
-//	character output_t = char,
-//	class output_traits_t,
-//	class output_allocator_t,
-//	character input_t,
-//	class input_traits_t,
-//	class input_allocator_t
-//>
-//convert_result_t
-//unicode_string_convert(
-//	std::basic_string<output_t, output_traits_t, output_allocator_t>& out,
-//	const std::basic_string<input_t, input_traits_t, input_allocator_t>& in);
-//
-//template<
-//	bom use_bom = bom::keep,
-//	character output_t,
-//	class output_traits_t,
-//	class output_allocator_t,
-//	character input_t,
-//	class input_traits_t,
-//	class input_allocator_t
-//>
-//convert_result_t
-//unicode_string_convert_le(
-//	std::basic_string<output_t, output_traits_t, output_allocator_t>& out,
-//	const std::basic_string<input_t, input_traits_t, input_allocator_t>& in);
-//
-//template<
-//	bom use_bom = bom::keep,
-//	character output_t,
-//	class output_traits_t,
-//	class output_allocator_t,
-//	character input_t,
-//	class input_traits_t,
-//	class input_allocator_t
-//>
-//convert_result_t
-//unicode_string_convert_be(
-//	std::basic_string<output_t, output_traits_t, output_allocator_t>& out,
-//	const std::basic_string<input_t, input_traits_t, input_allocator_t>& in);
-//
-//
-//
-//template<
-//	bool to_little_endian = std::endian::native == std::endian::little,
-//	bom use_bom = bom::keep,
-//	character output_t,
-//	character input_t
-//>
-//convert_result_t unicode_string_convert(output_t* _KSN_RESTRICT, size_t, const input_t* _KSN_RESTRICT, size_t) noexcept;
-//
-//template<
-//	bom use_bom = bom::keep,
-//	character output_t,
-//	character input_t
-//>
-//convert_result_t unicode_string_convert_le(output_t* _KSN_RESTRICT, size_t, const input_t* _KSN_RESTRICT, size_t) noexcept;
-//
-//template<
-//	bom use_bom = bom::keep,
-//	character output_t,
-//	character input_t
-//>
-//convert_result_t unicode_string_convert_be(output_t* _KSN_RESTRICT, size_t, const input_t* _KSN_RESTRICT, size_t) noexcept;
 
 _KSN_EXPORT_END
 
 
 
-
-
 _KSN_BEGIN
-
-//template<class T>
-//concept True = true;
 
 template<class char_t>
 struct compatible_char
@@ -168,9 +94,15 @@ bool is_big_endian<char16_t>(const char16_t* p, size_t n) noexcept
 template<>
 bool is_big_endian<char32_t>(const char32_t* p, size_t n) noexcept
 {
-	if (n >= 1 || (*p & 0xFF000000) != 0)
+	if (n >= 1 && (*p & 0xFF000000) != 0)
 		return std::endian::native == std::endian::little;
 	return std::endian::native == std::endian::big;
+}
+
+template<>
+bool is_big_endian<char>(const char* p, size_t n) noexcept
+{
+	return is_big_endian<char8_t>((const char8_t*)p, n);
 }
 
 template<>
@@ -409,7 +341,7 @@ public:
 		return 1;
 	}
 
-	static size_t put(char16_t* data_ptr, size_t data_size, char32_t value)
+	static size_t put(char32_t* data_ptr, size_t data_size, char32_t value)
 	{
 		if (data_size >= 1)
 		{
