@@ -161,10 +161,11 @@
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\libksn_color.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_image.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_time.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_type_traits.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_unicode.ixx" />
     <ClCompile Include="..\ksn\modules\test.ixx" />
-    <ClCompile Include="libksn_unicode.ixx" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>

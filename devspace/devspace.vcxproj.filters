@@ -32,7 +32,10 @@
     <ClCompile Include="..\ksn\modules\libksn_type_traits.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
-    <ClCompile Include="libksn_unicode.ixx">
+    <ClCompile Include="..\ksn\modules\libksn_unicode.ixx">
+      <Filter>Module Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_image.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
   </ItemGroup>
