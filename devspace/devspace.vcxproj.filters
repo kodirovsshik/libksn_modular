@@ -12,6 +12,9 @@
     <Filter Include="Main">
       <UniqueIdentifier>{c537fa5a-fe3f-42ca-b506-59f28f4bf975}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Module Files\window">
+      <UniqueIdentifier>{b272a557-944c-498a-98e1-2f419e08a8e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\test.ixx">
@@ -37,6 +40,24 @@
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_image.ixx">
       <Filter>Module Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window.ixx">
+      <Filter>Module Files\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_impl_common.ixx">
+      <Filter>Module Files\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_impl_windows.ixx">
+      <Filter>Module Files\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_decl_common.ixx">
+      <Filter>Module Files\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_decl_windows.ixx">
+      <Filter>Module Files\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_aux.ixx">
+      <Filter>Module Files\window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -165,6 +165,12 @@
     <ClCompile Include="..\ksn\modules\libksn_time.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_type_traits.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_unicode.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_aux.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_impl_common.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_impl_windows.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_decl_common.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_decl_windows.ixx" />
     <ClCompile Include="..\ksn\modules\test.ixx" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

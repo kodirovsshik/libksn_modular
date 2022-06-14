@@ -1,8 +1,11 @@
 ﻿
+import libksn.window;
+import libksn.time;
+
+#pragma comment(lib, "Onecore.lib")
+
 int main()
 {
-
-
-
-	return 0;
+	ksn::init_hybrid_sleep_threshold();
+	ksn::window_t win;
 }
