@@ -41,8 +41,11 @@ class time
 
 public:
 
-	constexpr time() noexcept; //01.01.1980
-	constexpr time(int64_t nanoseconds_since_epoch) noexcept;
+	constexpr time() noexcept; //0s (since 01.01.1980)
+	template<std::integral T>
+	constexpr time(T nanoseconds) noexcept;
+	template<std::floating_point T>
+	constexpr time(T seconds) noexcept;
 
 	constexpr time(const time&) noexcept = default;
 
@@ -69,7 +72,13 @@ public:
 	constexpr friend time operator+(time lhs, time rhs) noexcept;
 	constexpr friend time operator-(time lhs, time rhs) noexcept;
 
-	constexpr operator int64_t() const noexcept;
+	//nanoseconds
+	template<std::integral T>
+	constexpr operator T() const noexcept;
+	//seconds
+	template<std::floating_point T>
+	constexpr operator T() const noexcept;
+
 	constexpr explicit operator bool() const noexcept;
 
 	constexpr friend bool operator<(time lhs, time rhs) noexcept;
@@ -119,7 +128,11 @@ void hybrid_sleep_for(time dt);
 void hybrid_sleep_until(time point);
 
 
-ksn::time init_hybrid_sleep_threshold(float max_relative_error = 0.1f) noexcept;
+ksn::time init_hybrid_sleep_threshold(
+	long double max_sleep_time_relative_error = 0.0164,
+	ksn::time max_wait_time = ksn::time::from_float_sec(0.1f),
+	ksn::time lower_bound = 1e-3,
+	ksn::time upper_bound = 2e-2f) noexcept;
 ksn::time get_hybrid_sleep_threshold() noexcept;
 
 _KSN_EXPORT_END
@@ -135,8 +148,15 @@ constexpr time::time() noexcept
 	: m_nsec(0)
 {
 }
-constexpr time::time(int64_t ns) noexcept
-	: m_nsec(ns)
+template<std::integral T>
+constexpr time::time(T ns) noexcept
+	: m_nsec(int64_t(ns))
+{
+}
+
+template<std::floating_point T>
+constexpr time::time(T s) noexcept
+	: m_nsec(int64_t(s * (T)1e9))
 {
 }
 
@@ -205,9 +225,17 @@ time time::now() noexcept
 
 
 
-constexpr time::operator int64_t() const noexcept
+//nanoseconds
+template<std::integral T>
+constexpr time::operator T() const noexcept
 {
-	return this->m_nsec;
+	return (T)this->m_nsec;
+}
+//seconds
+template<std::floating_point T>
+constexpr time::operator T() const noexcept
+{
+	return this->m_nsec * (T)1e-9;
 }
 constexpr time::operator bool() const noexcept
 {
@@ -333,11 +361,10 @@ namespace
 		bool ok = true;
 
 		LARGE_INTEGER li;
-		if (!ksn_sleep_timer) ok = false;
-		{
-			li.QuadPart = absolute ? dt / 100 : -(dt / 100); //negative time interval means relative to current time
-			//And the time measured in 0.1 parts of microseconds
-		}
+		li.QuadPart = absolute ? dt / 100 : -(dt / 100); //negative time interval means relative to current time
+		
+		if (!ksn_sleep_timer)
+			ok = false;
 
 		if (ok) ok = SetWaitableTimer(ksn_sleep_timer, &li, 0, NULL, NULL, FALSE);
 		if (ok) ok = WaitForSingleObject(ksn_sleep_timer, INFINITE) != WAIT_FAILED;
@@ -427,30 +454,36 @@ void hybrid_sleep_until(time point)
 }
 
 
-ksn::time init_hybrid_sleep_threshold(float tolerance) noexcept
+ksn::time init_hybrid_sleep_threshold(long double tolerance, ksn::time max_wait_time, ksn::time lower_bound, ksn::time upper_bound) noexcept
 {
-	ksn::sleep_for(ksn::time::from_msec(16));
+	using fp_t = long double;
 
-	auto single_test = [&]() -> size_t
+	tolerance = std::clamp<fp_t>(tolerance, 0, INFINITY);
+	lower_bound = std::clamp<fp_t>(lower_bound, (fp_t)1e-10, INFINITY);
+	upper_bound = std::clamp<fp_t>(upper_bound, (fp_t)1e-10, INFINITY);
+
+	auto single_test = [&]() -> fp_t
 	{
 		ksn::stopwatch sw;
 
-		size_t low = 1;
-		size_t high = 16;
-		uint64_t dt;
+		fp_t low = lower_bound;
+		fp_t high = upper_bound;
 
-		while (low != high)
+		//yes i AM doing a binary search on sleep time and i like this idea
+		//go cry about it if you disagree
+		while (fabs(high - low) > (fp_t)lower_bound)
 		{
-			size_t mid = (low + high) / 2;
+			fp_t mid = (low + high) / 2;
 
+			auto sleep_time = ksn::time(mid);
 			sw.start();
-			ksn::sleep_for(ksn::time::from_msec(mid));
-			dt = sw.stop().as_usec();
+			ksn::sleep_for(sleep_time);
+			fp_t dt = sw.stop().as_float_sec();
 
-			float diff = dt * 1e-3f / mid - 1;
+			fp_t diff = dt / mid - 1;
 			if (diff < 0) diff = -diff;
 			if (diff > tolerance)
-				low = mid + 1;
+				low = mid + (fp_t)lower_bound;
 			else
 				high = mid;
 		}
@@ -458,20 +491,32 @@ ksn::time init_hybrid_sleep_threshold(float tolerance) noexcept
 		return low;
 	};
 
-	size_t total = 0;
+	const ksn::time max_test_time = (fp_t)upper_bound * std::log2((fp_t)upper_bound / (fp_t)lower_bound);
+	if (max_test_time > max_wait_time)
+		return hybrid_sleep_threshold = {};
 
-	static constexpr size_t N = 10;
+	//max_wait_time = max_wait_time - max_test_time;
 
-	for (size_t i = N; i-- > 0;)
+	size_t N = 0;
+	fp_t total = 0;
+
+	ksn::stopwatch sw;
+	sw.start();
+
+	(void)single_test();
+	while (N < 100)
+	{
+		++N;
+		if (sw.current() + max_test_time > max_wait_time)
+			break;
 		total += single_test();
+	}
 
-	return hybrid_sleep_threshold = (ksn::time::from_usec(total * 1000 / N));
+	return hybrid_sleep_threshold = ksn::time(total / N);
 }
 ksn::time get_hybrid_sleep_threshold() noexcept
 {
 	return hybrid_sleep_threshold;
 }
-
-
 
 _KSN_END
