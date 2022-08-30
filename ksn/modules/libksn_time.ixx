@@ -1,5 +1,5 @@
 
-/* The following code does not work because Windowsô
+/* The following code does not work because WindowsÅE
 
 export module libksn.time;
 
