@@ -29,9 +29,6 @@
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_time.ixx">
-      <Filter>Module Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_type_traits.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
@@ -58,6 +55,9 @@
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_aux.ixx">
       <Filter>Module Files\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_time.ixx">
+      <Filter>Module Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
