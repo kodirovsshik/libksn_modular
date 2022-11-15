@@ -3,7 +3,7 @@ export module libksn.window:common_implementation;
 
 import libksn.window;
 import :common_declaration;
-import libksn.time;
+//import libksn.time;
 
 import <ksn/ksn.hpp>;
 

@@ -1,4 +1,6 @@
 
+//TODO: delete the thing completely?
+
 module;
 
 #ifdef _WIN32
@@ -10,7 +12,7 @@ export module libksn.time;
 
 import <ksn/ksn.hpp>;
 import <concepts>;
-import libksn.meta;
+import libksn.type_traits;
 
 
 
