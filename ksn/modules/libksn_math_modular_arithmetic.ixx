@@ -36,11 +36,13 @@ class modular_integer
 	using my_t = modular_integer<T, mod>;
 	static_assert(mod > 0, "");
 
+	static constexpr bool nothrow_copy_constructible = std::is_nothrow_copy_constructible_v<T>;
+
 	T m_value;
 
 public:
 	constexpr modular_integer() noexcept = default;
-	constexpr modular_integer(const T&) noexcept(std::is_nothrow_copy_constructible_v<T>);
+	constexpr modular_integer(const T&) noexcept(nothrow_copy_constructible);
 
 	constexpr my_t& operator+=(const my_t&) noexcept;
 	constexpr my_t& operator-=(const my_t&) noexcept;
@@ -56,6 +58,12 @@ public:
 
 	constexpr my_t operator+() const noexcept;
 	constexpr my_t operator-() const noexcept;
+
+	constexpr my_t& operator++() noexcept;
+	constexpr my_t& operator--() noexcept;
+
+	constexpr my_t operator++(int) noexcept;
+	constexpr my_t operator--(int) noexcept;
 
 	constexpr operator T() const noexcept;
 };
@@ -154,7 +162,7 @@ _KSN_DETAIL_END
 
 
 template<class T, T mod>
-constexpr modular_integer<T, mod>::modular_integer(const T& x) noexcept(std::is_nothrow_copy_constructible_v<T>)
+constexpr modular_integer<T, mod>::modular_integer(const T& x) noexcept(nothrow_copy_constructible)
 	: m_value(detail::_normalize<T, mod>(x))
 {
 }
@@ -237,6 +245,37 @@ constexpr modular_integer<T, mod> modular_integer<T, mod>::operator-() const noe
 {
 	//conditional move pretty please?
 	return this->m_value ? my_t(mod - this->m_value) : my_t(0);
+}
+
+template<class T, T mod>
+constexpr modular_integer<T, mod>& modular_integer<T, mod>::operator++() noexcept
+{
+	++this->m_value;
+	if (this->m_value == mod)
+		this->m_value = 0;
+	return *this;
+}
+template<class T, T mod>
+constexpr modular_integer<T, mod>& modular_integer<T, mod>::operator--() noexcept
+{
+	if (this->m_value == 0)
+		this->m_value = mod;
+	--this->m_value;
+	return *this;
+}
+template<class T, T mod>
+constexpr modular_integer<T, mod> modular_integer<T, mod>::operator++(int) noexcept
+{
+	my_t copy(*this);
+	++*this;
+	return copy;
+}
+template<class T, T mod>
+constexpr modular_integer<T, mod> modular_integer<T, mod>::operator--(int) noexcept
+{
+	my_t copy(*this);
+	--*this;
+	return copy;
 }
 
 template<class T, T mod>
