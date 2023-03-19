@@ -29,7 +29,7 @@ _KSN_END
 
 _KSN_EXPORT_BEGIN
 
-//proper functioning is guaranteed only if modulus does not exceed (max(T)+1)/2
+//Modulus must not exceed (max(T)+1)/2
 template<class T, T mod>
 class modular_integer
 {
@@ -97,8 +97,10 @@ constexpr bool _is_prime(const T& x) noexcept
 	}
 	return true;
 }
+
+
 template<class T, T mod>
-constexpr  T _phi() noexcept
+constexpr  T _calc_phi() noexcept
 {
 	T phi = mod;
 	for (T i = 2; i <= mod; ++i)
@@ -107,6 +109,25 @@ constexpr  T _phi() noexcept
 			phi -= phi / i;
 	}
 	return phi;
+}
+
+_KSN_DETAIL_END
+
+
+export
+template<class T, T mod>
+struct phi
+{
+	static constexpr T value = detail::_calc_phi<T, mod>();
+};
+
+
+_KSN_DETAIL_BEGIN
+
+template<class T, T mod>
+constexpr  T _phi() noexcept
+{
+	return phi<T, mod>::value;
 }
 
 template<class T, T mod>

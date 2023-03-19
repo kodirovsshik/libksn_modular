@@ -1,6 +1,14 @@
 ﻿
 import libksn.math;
 
+namespace ksn
+{
+	template<>
+	struct phi <int, 10>
+	{
+		static constexpr int value = 69;
+	};
+}
 
 int main()
 {
