@@ -11,11 +11,11 @@ _KSN_EXPORT_BEGIN
 
 class window_common_impl
 {
-	//ksn::stopwatch m_sw;
-	//ksn::time period;
+	ksn::stopwatch m_sw;
+	ksn::duration period;
 
 public:
-	//void tick(void(*sleep_function)(ksn::time)) noexcept;
+	void tick(void(*sleep_function)(duration)) noexcept;
 };
 
 _KSN_EXPORT_END
