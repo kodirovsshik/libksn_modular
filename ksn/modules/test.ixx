@@ -2,12 +2,25 @@
 export module test;
 
 import <ksn/ksn.hpp>;
+import <concepts>;
 
 
 
 _KSN_EXPORT_BEGIN
 
-constexpr int foo(int x);
+template<class T>
+constexpr int foo(T x) { return 0; };
+
+template<std::integral T>
+constexpr int foo(T x)
+{
+	return 1;
+}
+template<std::floating_point T>
+constexpr int foo(T x)
+{
+	return 2;
+}
 
 _KSN_EXPORT_END
 
@@ -16,10 +29,5 @@ _KSN_EXPORT_END
 
 
 _KSN_BEGIN
-
-constexpr int foo(int x)
-{
-	return 42;
-}
 
 _KSN_END

@@ -38,9 +38,6 @@
     <ClCompile Include="..\ksn\modules\libksn_unicode.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_image.ixx">
-      <Filter>Module Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window.ixx">
       <Filter>Module Files\window</Filter>
     </ClCompile>
@@ -72,6 +69,9 @@
       <Filter>Module Files\math</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_multithreading.ixx">
+      <Filter>Module Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_index_pool.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
   </ItemGroup>

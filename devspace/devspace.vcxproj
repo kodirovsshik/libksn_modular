@@ -161,7 +161,8 @@
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\libksn_color.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
-    <ClCompile Include="..\ksn\modules\libksn_image.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_index_pool.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_mdvector.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math_common.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math_modular_arithmetic.ixx" />
