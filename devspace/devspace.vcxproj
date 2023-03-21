@@ -23,7 +23,7 @@
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{70314b9b-5580-4d8e-a4d7-ed7033008b21}</ProjectGuid>
     <RootNamespace>devspace</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -93,6 +93,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -112,6 +114,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,6 +135,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,6 +156,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\ksn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalBMIDirectories>%(AdditionalBMIDirectories)</AdditionalBMIDirectories>
       <EnableModules>true</EnableModules>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -162,6 +170,7 @@
     <ClCompile Include="..\ksn\modules\libksn_color.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_index_pool.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_math_wilcoxon.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_mdvector.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math_common.ixx" />
