@@ -32,7 +32,7 @@ class index_proxy
 	base_t* base;
 	size_t offset;
 
-	static constexpr size_t N = base_t::dimensions_number;
+	static constexpr size_t N = base_t::dimensions;
 
 	using my_t = index_proxy<level, base_t>;
 
@@ -80,9 +80,10 @@ class multivector
 	index_sequence m_size{};
 
 	void _allocate_total_storage(size_t);
-	void _construct_storage(const T & = T());
+	template<class ...Args>
+	void _construct_storage_from_args(Args&& ...args);
 	template<class Iter>
-	void _construct_storage(Iter, Iter);
+	void _construct_storage_from_range(Iter, Iter);
 	void _deallocate_storage();
 	Alloc _get_allocator();
 
@@ -107,10 +108,11 @@ public:
 	using reverse_iterator = std::reverse_iterator<T*>;
 	using const_reverse_iterator = std::reverse_iterator<const T*>;
 
-	static constexpr size_t dimensions_number = N;
+	static constexpr size_t dimensions = N;
 
 
-	multivector(index_sequence_ref, const T & = T());
+	template<class ...Args>
+	multivector(index_sequence_ref, Args&& ...args);
 
 	multivector() noexcept;
 	multivector(const my_t&);
@@ -177,11 +179,12 @@ inline void multivector<T, N>::_allocate_total_storage(size_t n)
 	this->m_data = std::allocator_traits<Alloc>::allocate(al, n);
 }
 template<class T, size_t N>
-inline void multivector<T, N>::_construct_storage(const T& value)
+template<class ...Args>
+inline void multivector<T, N>::_construct_storage_from_args(Args&& ...args)
 {
 	auto&& al = this->_get_allocator();
 	for (size_t i = 0; i < this->size(); ++i)
-		std::allocator_traits<Alloc>::construct(al, this->m_data + i, value);
+		std::allocator_traits<Alloc>::construct(al, this->m_data + i, std::forward<Args>(args)...);
 }
 
 template<class T, size_t N>
@@ -201,7 +204,7 @@ inline multivector<T, N>::Alloc multivector<T, N>::_get_allocator()
 }
 template<class T, size_t N>
 template<class Iter>
-inline void multivector<T, N>::_construct_storage(Iter begin, Iter end)
+inline void multivector<T, N>::_construct_storage_from_range(Iter begin, Iter end)
 {
 	auto&& al = this->_get_allocator();
 	auto ptr = this->m_data;
@@ -239,12 +242,13 @@ inline void multivector<T, N>::validate_index(size_t idx) const noexcept_on_rele
 
 
 template<class T, size_t N>
-inline multivector<T, N>::multivector(index_sequence_ref seq, const T& value)
+template<class ...Args>
+inline multivector<T, N>::multivector(index_sequence_ref seq, Args&& ...args)
 {
 	const size_t total = this->total(seq);
 	this->m_size = seq;
 	this->_allocate_total_storage(total);
-	this->_construct_storage(value);
+	this->_construct_storage_from_args(std::forward<Args>(args)...);
 }
 template<class T, size_t N>
 inline multivector<T, N>::multivector() noexcept
@@ -257,7 +261,7 @@ inline multivector<T, N>::multivector(const my_t& other)
 	const size_t total = this->total(other.m_size);
 	this->m_size = other.m_size;
 	this->_allocate_total_storage(total);
-	this->_construct_storage(other.cbegin(), other.cend());
+	this->_construct_storage_from_range(other.cbegin(), other.cend());
 }
 template<class T, size_t N>
 inline multivector<T, N>::multivector(my_t&& other) noexcept
@@ -431,7 +435,7 @@ inline void multivector<T, N>::resize(index_sequence_ref seq)
 	size_t iters = total(max);
 	while (iters-- > 0)
 	{
-		other[current] = (*this)[current];
+		other[current] = std::move((*this)[current]);
 
 		size_t updatee_idx = 0;
 		while (updatee_idx < N)
