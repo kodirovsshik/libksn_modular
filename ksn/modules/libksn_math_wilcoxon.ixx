@@ -1,80 +1,40 @@
 
+module;
+
+#include <ksn/ksn.hpp>
+
+
+
 export module libksn.math:wilcoxon;
 
 import libksn.mdvector;
 import <vector>;
-import <memory>;
+import <utility>;
+import <numeric>;
+import <random>;
+import <algorithm>;
 import <ranges>;
 
-import <ksn/ksn.hpp>;
-
-
-
-_KSN_BEGIN
-
-_KSN_DETAIL_BEGIN
-
-struct wilcoxon_row_storage
-{
-	std::unique_ptr<double[]> data;
-	size_t size = 0;
-
-	double& operator[](size_t n)
-	{
-		if (n >= this->size && _KSN_IS_DEBUG_BUILD)
-			__debugbreak();
-		return this->data[n];
-	}
-
-	void allocate(size_t n)
-	{
-		this->data = std::make_unique<double[]>(n);
-		this->size = n;
-	}
-	void set(uint8_t byte)
-	{
-		memset(this->data.get(), byte, this->size * sizeof(double));
-	}
-
-	auto view()
-	{
-		return std::ranges::views::counted(this->data.get(), this->size);
-	}
-};
-
-_KSN_DETAIL_END
-
-_KSN_END
 
 
 
 _KSN_EXPORT_BEGIN
 
-
-class wilcoxon_Udistribution_data
+template<class fp_t = double>
+class wilcoxon_Udistribution
 {
-	multivector<detail::wilcoxon_row_storage, 2> m_data;
-	double cached_inverse_combinations_count;
-	unsigned m_max_sum, m_n;
-
-	double data(int S, int m, int n);
-	double& data_ref(int S, int m, int n);
-
-	static constexpr double calc_inverse_combinations_count(unsigned n, unsigned m);
-	double inverse_combinations_count(unsigned n, unsigned m);
+	std::vector<fp_t> m_data;
+	size_t reflection_point;
 
 public:
-	wilcoxon_Udistribution_data(unsigned max_n, unsigned max_m);
+	constexpr wilcoxon_Udistribution(size_t m, size_t n);
 
-	double density(unsigned S);
-	double density(unsigned S, unsigned n, unsigned m);
-
-	unsigned n() const noexcept;
-	unsigned m() const noexcept;
-
-	std::vector<size_t> _storage_usage_statistics();
+	constexpr fp_t pdf(size_t x) const noexcept;
+	constexpr fp_t cdf(size_t x) const noexcept;
+	constexpr size_t quantile(fp_t x) const;
+	template<class Rng> requires(std::uniform_random_bit_generator<Rng>)
+	constexpr fp_t random(Rng&&) const noexcept;
 };
-
 
 _KSN_EXPORT_END
 
@@ -84,106 +44,110 @@ _KSN_EXPORT_END
 
 _KSN_BEGIN
 
-wilcoxon_Udistribution_data::wilcoxon_Udistribution_data(unsigned n, unsigned m)
+template<class fp_t = double>
+auto get_wilcox_counts(size_t m, size_t n)
 {
-	this->m_max_sum = m * n;
-	this->m_n = n;
-	this->m_data.resize({ this->m_max_sum / 2 + (size_t)1, (size_t)m + 1 });
-	
-	for (unsigned a = 0; a <= m; ++a)
+	const size_t S = m * n / 2;
+
+	ksn::multivector<fp_t, 2> dp;
+	dp.resize({ n + 1, S + 1 });
+
+	for (size_t i = 0; i <= n; ++i)
+		dp[i][0] = 1;
+
+	for (size_t i = 1; i <= m; ++i)
 	{
-		auto& row = this->m_data.data()[a];
-		row.allocate(n + 1);
-		
-		for (auto& x : row.view())
-			x = 1;
+		for (size_t j = 1; j <= n; ++j)
+		{
+			for (size_t k = S; k != -1; --k)
+			{
+				dp[j][k] = dp[j - 1][k];
+				if (k >= j)
+					dp[j][k] += dp[j][k - j];
+			}
+		}
 	}
 
-	this->cached_inverse_combinations_count = calc_inverse_combinations_count(n, m);
+	std::vector<fp_t> v;
+	v.reserve(S + 2);
+	v.resize(S + 1);
+	for (size_t k = 0; k <= S; ++k)
+		v[k] = dp[n][k];
+	return v;
 }
 
-double wilcoxon_Udistribution_data::density(unsigned S)
+template<class fp_t = double>
+auto get_wilcox_pdf(size_t m, size_t n)
 {
-	return this->density(S, this->n(), this->m());
+	if (n > m)
+		std::swap(n, m);
+
+	auto v = get_wilcox_counts(m, n);
+
+	fp_t total_outcomes = 1;
+	for (size_t k = 1; k <= n; ++k)
+		total_outcomes = total_outcomes * (m + k) / k;
+
+	for (auto& x : v)
+		x /= total_outcomes;
+	return v;
 }
-double wilcoxon_Udistribution_data::density(unsigned S, unsigned n, unsigned m)
+template<class fp_t = double>
+auto get_wilcox_cdf(size_t m, size_t n)
 {
-	return this->data(std::min(S, this->m_max_sum - S), n, m) * this->inverse_combinations_count(n, m);
-}
+	auto v = get_wilcox_pdf(m, n);
 
-unsigned wilcoxon_Udistribution_data::n() const noexcept
-{
-	return this->m_n;
-}
-unsigned wilcoxon_Udistribution_data::m() const noexcept
-{
-	return static_cast<unsigned>(this->m_data.size_dims()[1] - 1);
-}
-
-std::vector<size_t> wilcoxon_Udistribution_data::_storage_usage_statistics()
-{
-	size_t alloc = 0;
-	size_t alloc_max = 0;
-	size_t used = 0;
-	size_t used_max = 0;
-	for (auto& x : this->m_data)
-	{
-		alloc += x.size;
-		alloc_max += this->m_n + 1;
-		for (auto y : x.view())
-			used += (y != y);
-		used_max += x.size;
-	}
-	return { alloc, alloc_max, used, used_max };
-}
-
-
-double wilcoxon_Udistribution_data::data(int S, int m, int n)
-{
-	if (S < 0 || n < 0 || m < 0)
-		return 0;
-
-	auto& val = data_ref(S, m, n);
-
-	if (val != val)
-		val = this->data(S - n, m - 1, n) + this->data(S, m, n - 1);
-		//val = data(S - n, m - 1, n - 1) + data(S, m, n - 1); //Why u wrong
-	return val;
-}
-
-double& wilcoxon_Udistribution_data::data_ref(int S, int m, int n)
-{
-	auto& row = this->m_data[S][m];
-	if (row.size == 0)
-	{
-		row.allocate(this->m_n + 1);
-		row.set(0xFF);
-	}
-	return row[n];
-}
-
-constexpr double wilcoxon_Udistribution_data::calc_inverse_combinations_count(unsigned n, unsigned m)
-{
-	if (n < m)
-		return calc_inverse_combinations_count(m, n);
-
-	unsigned num = 1;
-	unsigned denom = n + 1;
-
-	double result = 1;
-	while (num <= m)
-	{
-		result *= num++;
-		result /= denom++;
-	}
-
-	return result;
-}
-double wilcoxon_Udistribution_data::inverse_combinations_count(unsigned n, unsigned m)
-{
-	if (n == this->n() && m == this->m())
-		return this->cached_inverse_combinations_count;
-	return calc_inverse_combinations_count(n, m);
+	fp_t last = std::move(v.back());
+	std::exclusive_scan(v.begin(), v.end(), v.begin(), 0.);
+	last += v.back();
+	v.emplace_back(std::move(last));
+	return v;
 }
 
 _KSN_END
+
+
+
+
+
+_KSN_EXPORT_BEGIN
+
+template<class fp_t>
+constexpr wilcoxon_Udistribution<fp_t>::wilcoxon_Udistribution(size_t m, size_t n)
+	: reflection_point(m * n)
+{
+	this->m_data = get_wilcox_cdf(m, n);
+}
+
+template<class fp_t>
+constexpr fp_t wilcoxon_Udistribution<fp_t>::pdf(size_t x) const noexcept
+{
+	if (x > this->reflection_point)
+		return 0;
+	x = std::min(x, this->reflection_point - x);
+	return this->m_data[x + 1] - this->m_data[x];
+}
+
+template<class fp_t>
+constexpr fp_t wilcoxon_Udistribution<fp_t>::cdf(size_t x) const noexcept
+{
+	if (x > this->reflection_point)
+		return 1;
+	const size_t x2 = this->reflection_point - x;
+	return (x <= x2) ? this->m_data[x + 1] : (1 - this->m_data[x2]);
+}
+
+template<class fp_t>
+constexpr size_t wilcoxon_Udistribution<fp_t>::quantile(fp_t p) const
+{
+	if (p < 0 || p > 1)
+		throw std::domain_error("wilcoxon_Udistribution: Invalid quantile order");
+
+	if (p > 0.5)
+		return this->reflection_point - this->quantile(1 - p);
+	
+	auto pos = std::ranges::lower_bound(this->m_data.begin() + 1, this->m_data.end(), p);
+	return pos - this->m_data.begin() - 1;
+}
+
+_KSN_EXPORT_END

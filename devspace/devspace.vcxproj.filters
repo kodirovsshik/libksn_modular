@@ -74,11 +74,11 @@
     <ClCompile Include="..\ksn\modules\libksn_index_pool.ixx">
       <Filter>Module Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_math_wilcoxon.ixx">
-      <Filter>Module Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_mdvector.ixx">
       <Filter>Module Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_math_wilcoxon.ixx">
+      <Filter>Module Files\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
