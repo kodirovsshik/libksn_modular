@@ -2,7 +2,7 @@
 module;
 #pragma warning(disable : 4005 5105 5106)
 #include <Windows.h>
-
+#include <ksn/ksn.hpp>
 
 
 
@@ -10,7 +10,6 @@ export module libksn.window:os_specific_declaration;
 
 import :auxillary;
 
-import <ksn/ksn.hpp>;
 import <climits>;
 import <deque>;
 import <mutex>;
@@ -61,6 +60,8 @@ struct window_impl
 
 
 	void check_initial_blackout() const noexcept;
+
+	void ensure_size_constraints() noexcept;
 
 	window_impl* operator->() noexcept;
 	const window_impl* operator->() const noexcept;

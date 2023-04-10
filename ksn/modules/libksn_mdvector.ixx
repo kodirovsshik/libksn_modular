@@ -2,6 +2,7 @@
 module;
 
 #include <ksn/ksn.hpp>
+#include <cstddef>
 
 
 #ifdef _DEBUG
@@ -18,7 +19,6 @@ import <memory>;
 import <array>;
 import <iterator>;
 import <stdexcept>;
-import <cstddef>;
 
 
 

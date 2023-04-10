@@ -2,6 +2,7 @@
 module;
 #pragma warning(disable : 4005 5105 5106)
 #include <Windows.h>
+#include <ksn/ksn.hpp>
 
 
 
@@ -11,7 +12,6 @@ import :auxillary;
 import :os_specific_declaration;
 import libksn.window;
 
-import <ksn/ksn.hpp>;
 import <deque>;
 import <mutex>;
 
@@ -28,17 +28,19 @@ window_t::window_t() noexcept
 
 std::pair<uint32_t, uint32_t> window_t::get_client_size() const noexcept
 {
-	WINDOWINFO wi;
+	WINDOWINFO wi{};
 	wi.cbSize = sizeof(wi);
-	if (!GetWindowInfo(this->m_impl->m_window, &wi)) return { 0, 0 };
+	if (!GetWindowInfo(this->m_impl->m_window, &wi)) 
+		return { 0, 0 };
 	return { uint32_t(wi.rcClient.right - wi.rcClient.left), uint32_t(wi.rcClient.bottom - wi.rcClient.top) };
 }
 std::pair<int32_t, int32_t> window_t::get_client_position() const noexcept
 {
-	WINDOWINFO wi;
+	WINDOWINFO wi{};
 	wi.cbSize = sizeof(wi);
-	if (!GetWindowInfo(this->m_impl->m_window, &wi)) return { 0, 0 };
-	return { int16_t(wi.rcClient.left), int16_t(wi.rcClient.top) };
+	if (!GetWindowInfo(this->m_impl->m_window, &wi)) 
+		return { 0, 0 };
+	return { int32_t(wi.rcClient.left), int32_t(wi.rcClient.top) };
 }
 
 
@@ -782,10 +784,6 @@ void window_impl::check_initial_blackout() const noexcept
 	}
 }
 
-
-
-
-
 window_impl* window_impl::operator->() noexcept
 {
 	return this;
@@ -793,6 +791,21 @@ window_impl* window_impl::operator->() noexcept
 const window_impl* window_impl::operator->() const noexcept
 {
 	return this;
+}
+
+void window_impl::ensure_size_constraints() noexcept
+{
+	auto size = this->m_ksn_window->get_client_size();
+
+	std::pair<uint32_t, uint32_t> new_size =
+	{
+		std::clamp(size.first, this->m_size_min.first, this->m_size_max.first),
+		std::clamp(size.second, this->m_size_min.second, this->m_size_max.second)
+	};
+
+	if (new_size == size)
+		return; //No unnecessary system calls
+	this->m_ksn_window->set_client_size(new_size);
 }
 
 _KSN_END

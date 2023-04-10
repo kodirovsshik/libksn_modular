@@ -14,6 +14,8 @@ _KSN_EXPORT_BEGIN
 
 
 
+struct event_t;
+
 class window_t
 {
 public:
@@ -32,7 +34,6 @@ public:
 	template<class char_t>
 	window_open_result_t open(uint32_t width, uint32_t height, const char_t* title = L"", window_style_t style = window_style::default_style) noexcept;
 
-
 	void close() noexcept;
 
 
@@ -42,7 +43,7 @@ public:
 
 	bool is_open() const noexcept;
 	//Same as is_open()
-	operator bool() const noexcept;
+	explicit operator bool() const noexcept;
 
 	bool has_focus() const noexcept;
 	void request_focus() const noexcept;
@@ -56,20 +57,19 @@ public:
 	uint32_t get_monitor_refresh_rate() const noexcept;
 
 	//Updates internal time counter and waits for a frame end according to set framerate
-	//Is a no-op if framerate is unlimited (that is, 0)
+	//Is a no-op if no frame rate limit is set
 	void framerate_sync() noexcept;
-	//Same as tick(), but uses hybrid sleep instead of the usual one if it has been 
-	//configured by ksn::init_hybid_sleep_threshold. Otherwise, is the same as tick()
+	//Same as tick(), but uses hybrid sleep
 	void framerate_sync_hybrid() noexcept;
 
 	uint32_t get_client_width() const noexcept;
 	uint32_t get_client_height() const noexcept;
 	std::pair<uint32_t, uint32_t> get_client_size() const noexcept;
 
-	bool set_client_width(uint16_t) noexcept;
-	bool set_client_height(uint16_t) noexcept;
-	bool set_client_size(uint16_t width, uint16_t height) noexcept;
-	bool set_client_size(std::pair<uint16_t, uint16_t>) noexcept;
+	bool set_client_width(uint32_t) noexcept;
+	bool set_client_height(uint32_t) noexcept;
+	bool set_client_size(uint32_t width, uint32_t height) noexcept;
+	bool set_client_size(std::pair<uint32_t, uint32_t>) noexcept;
 
 	int32_t get_client_x() const noexcept;
 	int32_t get_client_y() const noexcept;
