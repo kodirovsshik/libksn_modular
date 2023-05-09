@@ -7,6 +7,7 @@ import <vector>;
 import <type_traits>;
 import <algorithm>;
 import <iostream>;
+import <span>;
 
 
 
@@ -145,6 +146,9 @@ public:
 	constexpr long_integer(const my_t&) = default;
 	constexpr long_integer(my_t&&) = default;
 
+	template<bool signed2, class st2>
+	constexpr long_integer(const long_integer<signed2, st2>&);
+
 	constexpr my_t& operator=(const my_t&) = default;
 	constexpr my_t& operator=(my_t&&) = default;
 
@@ -183,6 +187,8 @@ public:
 
 using uint128 = long_integer<false, long_integer_static_fixed_storage<2>>;
 using int128 = long_integer<true, long_integer_static_fixed_storage<2>>;
+using uint256 = long_integer<false, long_integer_static_fixed_storage<4>>;
+using int256 = long_integer<true, long_integer_static_fixed_storage<4>>;
 
 using long_uint = long_integer<false, long_integer_dynamic_resizable_storage<>>;
 using long_int = long_integer<true, long_integer_dynamic_resizable_storage<>>;
@@ -200,50 +206,6 @@ constexpr int64_t cvt_sign64(uint64_t x)
 constexpr uint64_t cvt_sign64u(uint64_t x)
 {
 	return (uint64_t)cvt_sign64(x);
-}
-
-template<bool add, bool p_is_signed, long_integer_storage storage_t>
-void inc_dec(long_integer<p_is_signed, storage_t>& c)
-{
-	constexpr bool add = true;
-
-	const uint64_t sign1 = c.sign_u64();
-	const size_t n = this->size();
-
-	auto& c = *this;
-
-	unsigned char carry = 1;
-	for (size_t i = 0; carry && i < n; ++i)
-		carry = addsubcarry<add>(carry, 0, c[i], &c[i]);
-
-	if constexpr (c.is_resizable() && c.is_signed())
-	{
-		bool condition;
-		if constexpr (add)
-			condition = sign1 == 0;
-		else
-			condition = sign1 != 0;
-
-		if (condition && sign1 != c.sign_u64())
-		{
-			c.resize(n + 1);
-			c[n] = sign1;
-		}
-	}
-	else if constexpr (c.is_resizable() && !c.is_signed())
-	{
-		bool condition;
-		if constexpr (add)
-			condition = sign1 == 0 && carry;
-		else
-			condition = false;
-
-		if (condition)
-		{
-			c.resize(n + 1);
-			c[n] = 1;
-		}
-	}
 }
 
 _KSN_END
@@ -325,6 +287,13 @@ constexpr auto& long_integer<p_is_signed, storage_t>::operator[](size_t n) const
 }
 
 template<bool p_is_signed, long_integer_storage storage_t>
+void long_integer<p_is_signed, storage_t>::flip_bits()
+{
+	for (size_t i = 0; i < this->size(); ++i)
+		(*this)[i] ^= -1;
+}
+
+template<bool p_is_signed, long_integer_storage storage_t>
 void long_integer<p_is_signed, storage_t>::negate()
 {
 	this->flip_bits();
@@ -332,16 +301,35 @@ void long_integer<p_is_signed, storage_t>::negate()
 }
 
 template<bool p_is_signed, long_integer_storage storage_t>
-auto long_integer<p_is_signed, storage_t>::operator++() -> my_t&
+template<bool signed2, class st2>
+constexpr long_integer<p_is_signed, storage_t>::long_integer(const long_integer<signed2, st2>& x)
 {
-	inc_dec<true>(*this);
-	return *this;
-}
-template<bool p_is_signed, long_integer_storage storage_t>
-auto long_integer<p_is_signed, storage_t>::operator--() -> my_t&
-{
-	inc_dec<false>(*this);
-	return *this;
+	if constexpr (this->is_resizable())
+	{
+		if (x.size() == 0)
+			return;
+
+		const uint64_t sign2 = x.sign_u64();
+		uint64_t sign1;
+		if constexpr (p_is_signed)
+			sign1 = cvt_sign64u(x[x.size() - 1]);
+		else
+			sign1 = sign2;
+
+		size_t n = x.size();
+		if (sign1 != sign2)
+			++n;
+		this->resize(n);
+		memcpy(&(*this)[0], &x[0], x.size() * sizeof(uint64_t));
+		if (sign1 != sign2)
+			(*this)[n - 1] = sign2;
+	}
+	else
+	{
+		size_t n = std::min(this->size(), x.size());
+		memcpy(&(*this)[0], &x[0], n * sizeof(uint64_t));
+		memset(&(*this)[n], (int)x.sign_u64(), (this->size() - n) * sizeof(uint64_t));
+	}
 }
 
 template<bool p_is_signed, long_integer_storage storage_t>
@@ -426,6 +414,50 @@ constexpr inline uint8_t addsubcarry(uint8_t carry, uint64_t a, uint64_t b, uint
 		return addcarry(carry, a, b, result);
 	else
 		return subborrow(carry, a, b, result);
+}
+
+
+
+template<bool add, bool p_is_signed, long_integer_storage storage_t>
+void inc_dec(long_integer<p_is_signed, storage_t>& c)
+{
+	constexpr bool add = true;
+
+	const uint64_t sign1 = c.sign_u64();
+	const size_t n = c.size();
+
+	unsigned char carry = 1;
+	for (size_t i = 0; carry && i < n; ++i)
+		carry = addsubcarry<add>(carry, 0, c[i], &c[i]);
+
+	if constexpr (c.is_resizable() && c.is_signed())
+	{
+		bool condition;
+		if constexpr (add)
+			condition = sign1 == 0;
+		else
+			condition = sign1 != 0;
+
+		if (condition && sign1 != c.sign_u64())
+		{
+			c.resize(n + 1);
+			c[n] = sign1;
+		}
+	}
+	else if constexpr (c.is_resizable() && !c.is_signed())
+	{
+		bool condition;
+		if constexpr (add)
+			condition = sign1 == 0 && carry;
+		else
+			condition = false;
+
+		if (condition)
+		{
+			c.resize(n + 1);
+			c[n] = 1;
+		}
+	}
 }
 
 
@@ -670,6 +702,19 @@ constexpr auto operator*(const long_integer<sign1, st1>& a, const long_integer<s
 	return result;
 }
 
+template<bool p_is_signed, long_integer_storage storage_t>
+auto long_integer<p_is_signed, storage_t>::operator++() -> my_t&
+{
+	inc_dec<true>(*this);
+	return *this;
+}
+template<bool p_is_signed, long_integer_storage storage_t>
+auto long_integer<p_is_signed, storage_t>::operator--() -> my_t&
+{
+	inc_dec<false>(*this);
+	return *this;
+}
+
 _KSN_EXPORT_END
 
 
@@ -677,7 +722,7 @@ _KSN_EXPORT_END
 _KSN_BEGIN
 
 //TODO: do something about it
-char put10_4[] = {
+constexpr char put10_4[] = {
 '0','0','0','0','1','0','0','0','2','0','0','0','3','0','0','0','4','0','0','0','5','0','0','0','6','0','0','0','7','0','0','0','8','0','0','0','9','0','0','0',
 '0','1','0','0','1','1','0','0','2','1','0','0','3','1','0','0','4','1','0','0','5','1','0','0','6','1','0','0','7','1','0','0','8','1','0','0','9','1','0','0',
 '0','2','0','0','1','2','0','0','2','2','0','0','3','2','0','0','4','2','0','0','5','2','0','0','6','2','0','0','7','2','0','0','8','2','0','0','9','2','0','0',
@@ -1683,26 +1728,6 @@ static_assert(sizeof(put10_4) == 40000);
 
 
 
-template<class char_t, class traits_t>
-void put_num(int x, std::basic_ostream<char_t, traits_t>& os)
-{
-	std::vector<char_t> r;
-	constexpr int M = 10000;
-	while (x >= 1000)
-	{
-		int rem = x % M;
-		x = x / M;
-		auto* p = &put10_4[(size_t)rem * 4];
-		r.insert(r.end(), p, p + 4);
-	}
-	while (x)
-	{
-		r.push_back(x % 10 + '0');
-		x /= 10;
-	}
-	std::ranges::reverse(r);
-	os << std::string_view(r.data(), r.size());
-}
 
 template<uint64_t divisor, bool is_signed, class storage_t>
 uint64_t udivision_remainder(ksn::long_integer<is_signed, storage_t>& x)
@@ -1713,39 +1738,51 @@ uint64_t udivision_remainder(ksn::long_integer<is_signed, storage_t>& x)
 	return carry;
 }
 
-
-template<bool is_signed, class storage_t, class char_t, class traits_t>
-void put_num(ksn::long_integer<is_signed, storage_t> x, std::basic_ostream<char_t, traits_t>& os)
+export template<bool is_signed, class char_t, class traits_t>
+auto& operator<<(std::basic_ostream<char_t, traits_t>& os, ksn::long_integer<is_signed, long_integer_dynamic_resizable_storage<>> x)
 {
-	if (x.sign_u64())
-		throw;
+	x.shrink();
 
-	constexpr int M = 10000;
+	bool negative = x.sign_u64();
+	if (negative)
+		x.negate();
 
-	std::vector<char_t> r;
-	while (true)
-	{
-		x.shrink();
-		if (x.size() == 0 || (x.size() == 1 && x[0] < 1000))
-			break;
-		uint64_t rem = udivision_remainder<M>(x);
-		auto* p = &put10_4[(size_t)rem * 4];
-		r.insert(r.end(), p, p + 4);
-	}
+	std::vector<char_t> v;
+	v.reserve(x.size() * 20);
+
+	static constexpr uint64_t M = 10000;
+	static constexpr int k = 4;
+
 	while (x.size())
 	{
-		r.push_back((char)udivision_remainder<10>(x) + '0');
+		if (x.size() == 1 && x[0] < 1000)
+			break;
+		uint64_t rem = udivision_remainder<M>(x);
+		auto* p = &put10_4[(size_t)rem * k];
+		v.append_range(std::span<const char, 4>(p, p + 4));
 		x.shrink();
 	}
-	std::ranges::reverse(r);
-	os << std::string_view(r.data(), r.size());
+	uint64_t xi = x.size() ? x[0] : 0;
+	while (xi)
+	{
+		uint64_t rem = xi % 10;
+		xi /= 10;
+		v.push_back('0' + (char)rem);
+	}
+
+	if (negative)
+		v.push_back('-');
+
+	std::ranges::reverse(v);
+	os << std::basic_string_view<char_t, traits_t>(v.data(), v.size());
+
+	return os;
 }
 
 export template<bool is_signed, class storage_t, class char_t, class traits_t>
 auto& operator<<(std::basic_ostream<char_t, traits_t>& os, const ksn::long_integer<is_signed, storage_t>& x)
 {
-	put_num(x, os);
-	return os;
+	return (os << (ksn::long_integer<is_signed, long_integer_dynamic_resizable_storage<>>)x);
 }
 
 _KSN_END
