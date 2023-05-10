@@ -11,7 +11,7 @@ import <span>;
 
 
 
-_KSN_BEGIN
+_KSN_EXPORT_BEGIN
 
 template<class S>
 concept long_integer_storage =
@@ -32,104 +32,7 @@ concept long_integer_resizable_storage = long_integer_storage<S> &&
 	{ s.reserve(n) } -> std::same_as<void>;
 };
 
-export template<bool p_is_signed, long_integer_storage storage_t>
-class long_integer;
 
-
-
-template<size_t N>
-struct long_integer_static_fixed_storage
-{
-	uint64_t data[N]{};
-
-	//constexpr auto&& operator[](this auto&& self, size_t n) noexcept
-	//{
-	//	return self.data[n];
-	//}
-	constexpr auto&& operator[](size_t n) noexcept
-	{
-		return this->data[n];
-	}
-	constexpr auto&& operator[](size_t n) const noexcept
-	{
-		return this->data[n];
-	}
-	consteval static size_t size() noexcept
-	{
-		return N;
-	}
-	consteval static size_t capacity() noexcept
-	{
-		return N;
-	}
-};
-
-template<class container_t = std::vector<uint64_t>>
-struct long_integer_dynamic_resizable_storage
-{
-	container_t data;
-
-	//constexpr auto&& operator[](this auto&& self, size_t n) noexcept
-	//{
-	//	return this->data[n];
-	//}
-	constexpr auto&& operator[](size_t n) noexcept
-	{
-		return this->data[n];
-	}
-	constexpr auto&& operator[](size_t n) const noexcept
-	{
-		return this->data[n];
-	}
-	constexpr size_t size() const noexcept
-	{
-		return this->data.size();
-	}
-	constexpr size_t capacity() const noexcept
-	{
-		return this->data.capacity();
-	}
-	constexpr void resize(size_t n)
-	{
-		this->data.resize(n);
-	}
-	constexpr void resize(size_t n, uint64_t fill)
-	{
-		this->data.resize(n, fill);
-	}
-	constexpr void reserve(size_t n)
-	{
-		this->data.reserve(n);
-	}
-};
-
-
-
-template<long_integer_storage st1, long_integer_storage st2>
-struct combined_storage
-{
-	using type = st1;
-};
-
-template<long_integer_storage st1, long_integer_resizable_storage st2> requires(!long_integer_resizable_storage<st1>)
-struct combined_storage<st1, st2>
-{
-	using type = st2;
-};
-
-template<long_integer_storage st1, long_integer_storage st2>
-using combined_storage_t = combined_storage<st1, st2>::type;
-
-
-
-template<bool sign1, bool sign2, class st1, class st2>
-using combined_integer_t = long_integer<sign1 && sign2, combined_storage_t<st1, st2>>;
-
-_KSN_END
-
-
-
-_KSN_EXPORT_BEGIN
 
 template<bool p_is_signed, long_integer_storage storage_t>
 class long_integer
@@ -185,6 +88,35 @@ public:
 	constexpr my_t& operator*=(const long_integer<sign2, st2>& x);
 };
 
+
+
+template<size_t N>
+struct long_integer_static_fixed_storage
+{
+	uint64_t data[N]{};
+
+	constexpr uint64_t& operator[](size_t n) noexcept;
+	constexpr const uint64_t& operator[](size_t n) const noexcept;
+	consteval static size_t size() noexcept;
+	consteval static size_t capacity() noexcept;
+};
+
+template<class container_t = std::vector<uint64_t>>
+struct long_integer_dynamic_resizable_storage
+{
+	container_t data;
+
+	constexpr uint64_t& operator[](size_t n) noexcept;
+	constexpr const uint64_t& operator[](size_t n) const noexcept;
+	constexpr size_t size() const noexcept;
+	constexpr size_t capacity() const noexcept;
+	constexpr void resize(size_t n);
+	constexpr void resize(size_t n, uint64_t fill);
+	constexpr void reserve(size_t n);
+};
+
+
+
 using uint128 = long_integer<false, long_integer_static_fixed_storage<2>>;
 using int128 = long_integer<true, long_integer_static_fixed_storage<2>>;
 using uint256 = long_integer<false, long_integer_static_fixed_storage<4>>;
@@ -199,6 +131,66 @@ _KSN_EXPORT_END
 
 _KSN_BEGIN
 
+template<size_t N>
+constexpr uint64_t& long_integer_static_fixed_storage<N>::operator[](size_t n) noexcept
+{
+	return this->data[n];
+}
+template<size_t N>
+constexpr const uint64_t& long_integer_static_fixed_storage<N>::operator[](size_t n) const noexcept
+{
+	return this->data[n];
+}
+template<size_t N>
+inline consteval size_t long_integer_static_fixed_storage<N>::size() noexcept
+{
+	return N;
+}
+template<size_t N>
+inline consteval size_t long_integer_static_fixed_storage<N>::capacity() noexcept
+{
+	return N;
+}
+
+template<class container_t>
+constexpr uint64_t& long_integer_dynamic_resizable_storage<container_t>::operator[](size_t n) noexcept
+{
+	return this->data[n];
+}
+template<class container_t>
+constexpr const uint64_t& long_integer_dynamic_resizable_storage<container_t>::operator[](size_t n) const noexcept
+{
+	return this->data[n];
+}
+template<class container_t>
+inline constexpr size_t long_integer_dynamic_resizable_storage<container_t>::size() const noexcept
+{
+	return this->data.size();
+}
+
+template<class container_t>
+inline constexpr size_t long_integer_dynamic_resizable_storage<container_t>::capacity() const noexcept
+{
+	return this->data.capacity();
+}
+template<class container_t>
+inline constexpr void long_integer_dynamic_resizable_storage<container_t>::resize(size_t n)
+{
+	this->data.resize(n);
+}
+template<class container_t>
+inline constexpr void long_integer_dynamic_resizable_storage<container_t>::resize(size_t n, uint64_t fill)
+{
+	this->data.resize(n, fill);
+}
+template<class container_t>
+inline constexpr void long_integer_dynamic_resizable_storage<container_t>::reserve(size_t n)
+{
+	this->data.reserve(n);
+}
+
+
+
 constexpr int64_t cvt_sign64(uint64_t x)
 {
 	return (int64_t)x >> 63;
@@ -208,11 +200,7 @@ constexpr uint64_t cvt_sign64u(uint64_t x)
 	return (uint64_t)cvt_sign64(x);
 }
 
-_KSN_END
 
-
-
-_KSN_EXPORT_BEGIN
 
 template<bool p_is_signed, long_integer_storage storage_t>
 inline consteval bool long_integer<p_is_signed, storage_t>::is_signed() noexcept
@@ -267,7 +255,7 @@ inline constexpr int64_t long_integer<p_is_signed, storage_t>::sign_i64() const 
 		return 0;
 	if (this->size() == 0)
 		return 0;
-	return (int64_t)this->m_storage[this->size() - 1] >> 63;
+	return cvt_sign64((*this)[this->size() - 1]);
 }
 template<bool p_is_signed, long_integer_storage storage_t>
 inline constexpr uint64_t long_integer<p_is_signed, storage_t>::sign_u64() const noexcept
@@ -368,11 +356,9 @@ void long_integer<p_is_signed, storage_t>::shrink() requires long_integer_resiza
 	this->resize(this->actual_size());
 }
 
-_KSN_EXPORT_END
 
 
 
-_KSN_BEGIN
 
 constexpr inline uint8_t addcarry(uint8_t carry, uint64_t a, uint64_t b, uint64_t* result)
 {
@@ -557,8 +543,7 @@ constexpr void addsub(
 constexpr inline uint64_t umul128(uint64_t a, uint64_t b, uint64_t* h)
 {
 	using ull = unsigned long long;
-	//TODO: remove "false &&"
-	if (false && !std::is_constant_evaluated())
+	if (!std::is_constant_evaluated())
 		return (uint64_t)_umul128((ull)a, (ull)b, (ull*)h);
 
 	uint32_t out[4]{};
@@ -653,6 +638,30 @@ _KSN_END
 
 
 
+_KSN_BEGIN
+
+template<long_integer_storage st1, long_integer_storage st2>
+struct combined_storage
+{
+	using type = st1;
+};
+
+template<long_integer_storage st1, long_integer_resizable_storage st2> requires(!long_integer_resizable_storage<st1>)
+struct combined_storage<st1, st2>
+{
+	using type = st2;
+};
+
+template<long_integer_storage st1, long_integer_storage st2>
+using combined_storage_t = combined_storage<st1, st2>::type;
+
+template<bool sign1, bool sign2, class st1, class st2>
+using combined_integer_t = long_integer<sign1&& sign2, combined_storage_t<st1, st2>>;
+
+_KSN_END
+
+
+
 _KSN_EXPORT_BEGIN
 
 template<bool p_is_signed, long_integer_storage storage_t>
@@ -722,7 +731,7 @@ _KSN_EXPORT_END
 _KSN_BEGIN
 
 template<uint64_t divisor, bool is_signed, class storage_t>
-uint64_t udivision_remainder(ksn::long_integer<is_signed, storage_t>& x)
+uint64_t single_digit_udivide_and_get_remainder_ct(ksn::long_integer<is_signed, storage_t>& x)
 {
 	uint64_t carry = 0;
 	for (size_t i = x.size() - 1; i != -1; --i)
@@ -751,7 +760,7 @@ auto& operator<<(std::basic_ostream<char_t, traits_t>& os, ksn::long_integer<is_
 	{
 		if (x.size() == 1 && x[0] < 1000)
 			break;
-		uint64_t rem = udivision_remainder<M>(x);
+		uint64_t rem = single_digit_udivide_and_get_remainder_ct<M>(x);
 		auto* p = &put10_4[(size_t)rem * k];
 		v.append_range(std::span<const char, 4>(p, p + 4));
 		x.shrink();

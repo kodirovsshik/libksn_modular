@@ -1,5 +1,5 @@
 
-module libksn.math.long_integer;
+export module libksn.math.long_integer:tables;
 
 import <ksn/ksn.hpp>;
 
