@@ -1,5 +1,5 @@
 
-export module libksn.math:modular_arithmetic;
+export module libksn.math.modular_arithmetic;
 
 import <ksn/ksn.hpp>;
 

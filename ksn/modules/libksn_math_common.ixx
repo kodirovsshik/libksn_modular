@@ -1,5 +1,5 @@
 
-export module libksn.math:common;
+export module libksn.math.common;
 
 import libksn.type_traits;
 

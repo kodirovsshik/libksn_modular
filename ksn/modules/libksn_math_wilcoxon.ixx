@@ -5,7 +5,7 @@ module;
 
 
 
-export module libksn.math:wilcoxon;
+export module libksn.math.wilcoxon;
 
 import libksn.mdvector;
 import <vector>;

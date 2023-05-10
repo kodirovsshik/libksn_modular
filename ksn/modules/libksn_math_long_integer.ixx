@@ -1,5 +1,5 @@
 
-export module libksn.math:long_integer;
+export module libksn.math.long_integer;
 
 import <ksn/ksn.hpp>;
 import <concepts>;
