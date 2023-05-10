@@ -83,6 +83,9 @@
     <ClCompile Include="..\ksn\modules\libksn_math_long_integer.ixx">
       <Filter>Module Files\math</Filter>
     </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_math_long_integer_tables.ixx">
+      <Filter>Module Files\math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ksn\include\ksn\ksn.hpp">

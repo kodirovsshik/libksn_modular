@@ -171,6 +171,7 @@
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_index_pool.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math_long_integer.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_math_long_integer_tables.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math_wilcoxon.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_mdvector.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math.ixx" />
