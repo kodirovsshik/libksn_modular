@@ -1,15 +1,7 @@
 ﻿
 import libksn.math;
 
-import <stddef.h>;
-import <stdint.h>;
-import <intrin.h>;
-
-import <iostream>;
-import <fstream>;
-import <string>;
-import <vector>;
-import <algorithm>;
+import std;
 
 int main()
 {

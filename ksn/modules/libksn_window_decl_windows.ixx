@@ -1,18 +1,14 @@
 
-module;
 #pragma warning(disable : 4005 5105 5106)
-#include <Windows.h>
-#include <ksn/ksn.hpp>
 
 
 
 export module libksn.window:os_specific_declaration;
 
+import <ksn/ksn.hpp>;
+import <Windows.h>;
 import :auxillary;
 
-import <climits>;
-import <deque>;
-import <mutex>;
 
 
 

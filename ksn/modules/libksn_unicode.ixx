@@ -4,9 +4,6 @@ export module libksn.unicode;
 import libksn.type_traits;
 import <ksn/ksn.hpp>;
 
-import <bit>;
-import <string>;
-import <type_traits>;
 
 
 

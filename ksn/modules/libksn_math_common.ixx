@@ -4,8 +4,6 @@ export module libksn.math.common;
 import libksn.type_traits;
 
 import <ksn/ksn.hpp>;
-import <iterator>;
-import <cmath>;
 
 
 _KSN_EXPORT_BEGIN

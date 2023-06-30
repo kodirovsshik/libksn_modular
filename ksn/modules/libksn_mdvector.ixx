@@ -1,10 +1,4 @@
 
-module;
-
-#include <ksn/ksn.hpp>
-#include <cstddef>
-
-
 #ifdef _DEBUG
 #define noexcept_on_release
 #else
@@ -15,10 +9,7 @@ module;
 
 export module libksn.mdvector;
 
-import <memory>;
-import <array>;
-import <iterator>;
-import <stdexcept>;
+import <ksn/ksn.hpp>;
 
 
 

@@ -2,7 +2,6 @@
 export module test;
 
 import <ksn/ksn.hpp>;
-import <concepts>;
 
 
 

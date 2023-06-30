@@ -6,13 +6,14 @@
 
 
 
+import std;
 
-
-#include <stdint.h>
-#include <float.h>
-#include <limits.h>
-
-
+import <string.h>;
+import <stdlib.h>;
+import <stddef.h>;
+import <stdint.h>;
+import <float.h>;
+import <limits.h>;
 
 
 

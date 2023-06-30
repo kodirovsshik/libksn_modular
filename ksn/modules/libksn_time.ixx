@@ -1,14 +1,7 @@
 
-module;
-
-#include <ksn/ksn.hpp>
-
-
 export module libksn.time;
 
-import <chrono>;
-import <compare>;
-import <thread>;
+import <ksn/ksn.hpp>;
 
 
 

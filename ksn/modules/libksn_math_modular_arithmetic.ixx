@@ -3,10 +3,6 @@ export module libksn.math.modular_arithmetic;
 
 import <ksn/ksn.hpp>;
 
-import <type_traits>;
-import <stdexcept>;
-import <numeric>;
-
 //TODO: provide custom totient function parameter?
 
 

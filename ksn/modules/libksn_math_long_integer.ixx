@@ -2,12 +2,7 @@
 export module libksn.math.long_integer;
 
 import <ksn/ksn.hpp>;
-import <concepts>;
-import <vector>;
-import <type_traits>;
-import <algorithm>;
-import <iostream>;
-import <span>;
+import <intrin.h>;
 
 
 

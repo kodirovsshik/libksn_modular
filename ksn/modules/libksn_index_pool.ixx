@@ -3,12 +3,6 @@ export module libksn.index_pool;
 
 import <ksn/ksn.hpp>;
 
-import <numeric>;
-import <algorithm>;
-import <functional>;
-import <vector>;
-import <random>;
-
 
 
 _KSN_EXPORT_BEGIN

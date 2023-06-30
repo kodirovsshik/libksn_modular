@@ -1,12 +1,7 @@
 
-module;
-
-#include <ksn/ksn.hpp>
-
-
-
 export module libksn.window:common_implementation;
 
+import <ksn/ksn.hpp>;
 import libksn.window;
 import :common_declaration;
 

@@ -2,7 +2,6 @@
 export module libksn.type_traits;
 
 import <ksn/ksn.hpp>;
-import <type_traits>;
 
 
 

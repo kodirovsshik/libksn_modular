@@ -6,7 +6,6 @@ import :os_specific_declaration;
 import :common_declaration;
 
 import <ksn/ksn.hpp>;
-import <utility>;
 
 
 

@@ -1,19 +1,11 @@
 
-module;
-
-#include <ksn/ksn.hpp>
 
 
 
 export module libksn.math.wilcoxon;
 
+import <ksn/ksn.hpp>;
 import libksn.mdvector;
-import <vector>;
-import <utility>;
-import <numeric>;
-import <random>;
-import <algorithm>;
-import <ranges>;
 
 
 
@@ -140,9 +132,6 @@ constexpr fp_t wilcoxon_Udistribution<fp_t>::cdf(size_t x) const noexcept
 template<class fp_t>
 constexpr size_t wilcoxon_Udistribution<fp_t>::quantile(fp_t p) const
 {
-	if (p < 0 || p > 1)
-		throw std::domain_error("wilcoxon_Udistribution: Invalid quantile order");
-
 	if (p > 0.5)
 		return this->reflection_point - this->quantile(1 - p);
 	
