@@ -53,13 +53,17 @@ public:
 	float get_framerate_limit() const noexcept;
 
 	//Refresh rate of the monitor the OS considers window to be on
-	uint32_t get_monitor_refresh_rate() const noexcept;
+	uint32_t get_current_monitor_refresh_rate() const noexcept;
 
 	//Updates internal time counter and waits for a frame end according to set framerate
 	//Is a no-op if no frame rate limit is set
+	//Waiting strategy is unspecified
 	void framerate_sync() noexcept;
-	//Same as tick(), but uses hybrid sleep
+
+	void framerate_sync_sleep() noexcept;
+	void framerate_sync_busy() noexcept;
 	void framerate_sync_hybrid() noexcept;
+
 
 	uint32_t get_client_width() const noexcept;
 	uint32_t get_client_height() const noexcept;
@@ -70,6 +74,7 @@ public:
 	bool set_client_size(uint32_t width, uint32_t height) noexcept;
 	bool set_client_size(std::pair<uint32_t, uint32_t>) noexcept;
 
+
 	int32_t get_client_x() const noexcept;
 	int32_t get_client_y() const noexcept;
 	std::pair<int32_t, int32_t> get_client_position() const noexcept;
@@ -79,11 +84,12 @@ public:
 	bool set_client_position(int32_t x, int32_t y) noexcept;
 	bool set_client_position(std::pair<int32_t, int32_t>) noexcept;
 
+
 	//Tries to center the window
 	void reset_window_position() noexcept;
 	void set_fullscreen_windowed() noexcept;
 
-	void set_cursor_visible(bool visible = true) const noexcept;
+	void set_cursor_visible(bool visible = true) noexcept;
 	void set_cursor_captured(bool captured = true) noexcept;
 
 	void hide() const noexcept;
@@ -100,7 +106,7 @@ public:
 	bool set_size_min_height(uint32_t) noexcept;
 	bool set_size_max_height(uint32_t) noexcept;
 
-	void set_special_keys_check_on_event(bool check_enabled = true) noexcept;
+	void set_modifier_keys_check_on_keyboard_event(bool check_enabled = true) noexcept;
 
 private:
 	window_impl m_impl;

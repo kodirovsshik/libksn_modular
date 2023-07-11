@@ -37,11 +37,6 @@ bool window_t::set_client_height(uint32_t h) noexcept
 {
 	return this->set_client_size(this->get_client_width(), h);
 }
-bool window_t::set_client_size(uint32_t width, uint32_t height) noexcept
-{
-	//TODO
-	return false;
-}
 int32_t window_t::get_client_x() const noexcept
 {
 	return this->get_client_position().first;
@@ -83,7 +78,15 @@ window_t::~window_t() noexcept
 
 void window_t::framerate_sync() noexcept
 {
+	this->framerate_sync_sleep();
+}
+void window_t::framerate_sync_sleep() noexcept
+{
 	this->m_common_impl.tick(ksn::sleep_for);
+}
+void window_t::framerate_sync_busy() noexcept
+{
+	this->m_common_impl.tick(ksn::busy_sleep_for);
 }
 void window_t::framerate_sync_hybrid() noexcept
 {
