@@ -95,6 +95,10 @@
       <EnableModules>true</EnableModules>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TranslateIncludes>true</TranslateIncludes>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <BuildStlModules>true</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +120,8 @@
       <EnableModules>true</EnableModules>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BuildStlModules>true</BuildStlModules>
+      <SupportJustMyCode>true</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +143,10 @@
       <EnableModules>true</EnableModules>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TranslateIncludes>true</TranslateIncludes>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <BuildStlModules>true</BuildStlModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,6 +168,8 @@
       <EnableModules>true</EnableModules>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BuildStlModules>true</BuildStlModules>
+      <SupportJustMyCode>true</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,6 +180,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\libksn_color.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_compress.ixx">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_compress_huffman.ixx">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsCppModule</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsCppModule</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCppModule</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCppModule</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_compress_common.ixx">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Default</CompileAs>
+    </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_crc.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_index_pool.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_math_long_integer.ixx" />

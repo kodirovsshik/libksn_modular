@@ -18,6 +18,9 @@
     <Filter Include="Module Files\math">
       <UniqueIdentifier>{391987f3-e090-4c64-a5c6-71767771d69c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Module Files\compress">
+      <UniqueIdentifier>{8486e3db-8dcd-48f6-8800-386e79cc2bdd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\test.ixx">
@@ -85,6 +88,15 @@
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_math_long_integer_tables.ixx">
       <Filter>Module Files\math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_compress.ixx">
+      <Filter>Module Files\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_compress_huffman.ixx">
+      <Filter>Module Files\compress</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_compress_common.ixx">
+      <Filter>Module Files\compress</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

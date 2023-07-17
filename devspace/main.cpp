@@ -1,14 +1,12 @@
 ﻿
-import libksn.math;
-
 import std;
+import libksn.compress;
+
+
 
 int main()
 {
-	ksn::int128 x;
-	x[0] = 0;
-	x[1] = 0x8000000000000000;
-
-	ksn::uint128 y = x;
-	std::cout << x << "\n " << y;
+	ksn::huffman_compressor<char> c;
+	c.compress("A DEAD DAD CEDED A BAD BABE A BEADED ABACA BED");
+	auto data = c.data();
 }
