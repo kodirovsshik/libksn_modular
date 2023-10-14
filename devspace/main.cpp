@@ -5,10 +5,8 @@ import std;
 
 int main()
 {
-	ksn::int128 x;
-	x[0] = 0;
-	x[1] = 0x8000000000000000;
-
-	ksn::uint128 y = x;
-	std::cout << x << "\n " << y;
-}
+	ksn::sqmatrix<float, 3> m, n;
+	m(0, 0) = m(1, 0) = 1;
+	n(1, 0) = 4;
+	auto x = m + n;
+ }
