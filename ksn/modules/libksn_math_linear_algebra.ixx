@@ -79,14 +79,26 @@ class generic_matrix_t
 	
 	using self_t = generic_matrix_t;
 
+	template<std::forward_iterator Iter>
+	void init_from(Iter begin, size_t size)
+	{
+		const size_t to_be_copied = std::min(this->size(), size);
+		std::copy(begin, begin + to_be_copied, this->storage.begin());
+	}
+
 public:
 	using element_type = storage_t::element_type;
 
 	generic_matrix_t() = default;
+
+	template<std::forward_iterator Iter>
+	constexpr generic_matrix_t(Iter begin, size_t count)
+	{
+		this->init_from(begin, count);
+	}
 	constexpr generic_matrix_t(std::initializer_list<element_type> l)
 	{
-		const size_t to_be_copied = std::min(this->size(), l.size());
-		std::copy(l.begin(), l.begin() + to_be_copied, storage.begin());
+		this->init_from(l.begin(), l.size());
 	}
 
 	constexpr size_t rows() const noexcept
@@ -170,6 +182,34 @@ public:
 		return copy;
 	}
 };
+
+template<detail::fixed_ct_matrix_storage storage1_t, detail::fixed_ct_matrix_storage storage2_t>
+constexpr auto convolution(const generic_matrix_t<storage1_t>& matrix, const generic_matrix_t<storage2_t>& kernel)
+{
+	static constexpr size_t result_rows = storage1_t::n_rows - storage2_t::n_rows + 1;
+	static constexpr size_t result_columns = storage1_t::n_columns - storage2_t::n_columns + 1;
+	//using common_t = std::common_type_t<storage1_t::element_type, storage2_t::element_type>;
+	using common_t = storage1_t::element_type;
+	using result_storage = detail::static_matrix_storage_t<common_t, result_rows, result_columns>;
+	generic_matrix_t<result_storage> result;
+
+	for (size_t y = 0; y < result.rows(); ++y)
+	{
+		for (size_t x = 0; x < result.columns(); ++x)
+		{
+			for (size_t i = 0; i < kernel.rows(); ++i)
+			{
+				for (size_t j = 0; j < kernel.columns(); ++j)
+				{
+					result(y, x) += matrix(y + i, x + j) * kernel(i, j);
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
 
 template<class T, size_t n, size_t m>
 using matrix = generic_matrix_t<detail::static_matrix_storage_t<T, n, m>>;
