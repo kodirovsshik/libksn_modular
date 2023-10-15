@@ -81,22 +81,15 @@ concept any_of = is_any_of_v<T, Arg0, Args...>;
 
 
 
-template<class A, class B>
-struct is_same_to_cv
-	: std::bool_constant< std::is_same_v<std::remove_cv_t<A>, std::remove_cv_t<B>> >
-{
-};
-
-template<class A, class B>
-constexpr bool is_same_to_cv_v = is_same_to_cv<A, B>::value;
-
 template<class T, class U>
-concept same_to_cv = is_same_to_cv_v<T, U>;
+concept same_to_cv = std::same_as<std::remove_cv_t<T>, std::remove_cv_t<U>>;
+template<class T, class U>
+concept same_to_cvref = std::same_as<std::remove_cvref_t<T>, std::remove_cvref_t<U>>;
 
 
 
 template<class WHAT, class TO>
-concept universal_reference = ksn::is_same_to_cv_v<std::remove_reference_t<TO>, std::remove_reference_t<WHAT>>;
+concept universal_reference = same_to_cvref<TO, WHAT>;
 
 
 
