@@ -38,8 +38,51 @@ public:
 	static consteval size_t columns() noexcept { return n_columns; }
 };
 
+template<class T, size_t n_rows, size_t n_columns = 1>
+class fixed_dymanic_matrix_storage_t
+{
+	using row_t = std::array<T, n_columns>;
+	using storage_t = std::array<row_t, n_rows>;
+
+private:
+	std::unique_ptr<storage_t> m_data_ptr = std::make_unique<storage_t>();
+	storage_t& data() noexcept { return *this->m_data_ptr; }
+	const storage_t& data() const noexcept { return *this->m_data_ptr; }
+
+public:
+
+	fixed_dymanic_matrix_storage_t() = default;
+	fixed_dymanic_matrix_storage_t(fixed_dymanic_matrix_storage_t&&) = default;
+	fixed_dymanic_matrix_storage_t(const fixed_dymanic_matrix_storage_t& other)
+	{
+		for (size_t i = 0; i < this->size(); ++i)
+			this->begin()[i] = other.begin()[i];
+	}
+
+	static constexpr bool is_constexpr_size = true;
+	static constexpr size_t n_rows = n_rows;
+	static constexpr size_t n_columns = n_columns;
+
+	//using transposed_t = fixed_dymanic_matrix_storage_t<T, n_columns, n_rows>;
+	using element_type = T;
+
+	//auto&& operator()(this auto&& self, size_t row, size_t column = 0) noexcept { return self.data()[row][column]; };
+	T& operator()(size_t n, size_t m = 0) noexcept { return this->data()[n][m]; };
+	const T& operator()(size_t n, size_t m = 0) const noexcept { return this->data()[n][m]; };
+
+	T* begin() noexcept { return &this->data()[0][0]; }
+	const T* begin() const noexcept { return &this->data()[0][0]; }
+	T* end() noexcept { return this->begin() + this->size(); }
+	const T* end() const noexcept { return this->begin() + this->size(); }
+
+	static consteval size_t size() noexcept { return n_rows * n_columns; }
+	static consteval size_t rows() noexcept { return n_rows; }
+	static consteval size_t columns() noexcept { return n_columns; }
+};
+
 template<class T>
-concept matrix_storage = requires(T t, const T ct, size_t sz)
+concept matrix_storage = std::is_default_constructible_v<T> &&
+	requires(T t, const T ct, size_t sz)
 {
 	typename T::element_type;
 	{ t(sz, sz) } -> std::same_as<typename T::element_type&>;
@@ -115,8 +158,8 @@ public:
 	}
 
 	//auto&& operator()(this auto&& self, size_t row, size_t column = 0) noexcept { return self.storage(row)(column); };
-	constexpr element_type& operator()(size_t n, size_t m) noexcept { return this->storage(n, m); }
-	constexpr const element_type& operator()(size_t n, size_t m) const noexcept { return this->storage(n, m); }
+	constexpr element_type& operator()(size_t n, size_t m = 0) noexcept { return this->storage(n, m); }
+	constexpr const element_type& operator()(size_t n, size_t m = 0) const noexcept { return this->storage(n, m); }
 
 	template<class other_storage_t>
 		requires(detail::ct_same_size_matrix<storage_t, other_storage_t>)
@@ -215,8 +258,14 @@ template<class T, size_t n, size_t m>
 using matrix = generic_matrix_t<detail::static_matrix_storage_t<T, n, m>>;
 template<class T, size_t n>
 using sqmatrix = matrix<T, n, n>;
-
 template<class T, size_t n>
 using vector = matrix<T, n, 1>;
+
+template<class T, size_t n, size_t m>
+using hmatrix = generic_matrix_t<detail::fixed_dymanic_matrix_storage_t<T, n, m>>;
+template<class T, size_t n>
+using hsqmatrix = hmatrix<T, n, n>;
+template<class T, size_t n>
+using hvector = hmatrix<T, n, 1>;
 
 _KSN_EXPORT_END
