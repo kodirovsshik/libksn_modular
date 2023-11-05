@@ -129,7 +129,15 @@ bit_iterator bit_stream_append_obj(bit_iterator p, const T& x, size_t bits = -1)
 	bit_iterator src((uint8_t*)&x);
 	return bit_iterator_copy(p, src, bits);
 }
-
+template<class T>
+bit_iterator bit_stream_append_obj_aligned(bit_iterator p, const T& x)
+{
+	assert(p.mask == 1);
+	memcpy(p.ptr, &x, sizeof(T));
+	p.ptr += sizeof(T);
+	p.bit += sizeof(T) * 8;
+	return p;
+}
 
 struct leaf_node_data
 {
@@ -177,88 +185,93 @@ void huffman_compressor<in_t, ByteAlloc>::compress(in_span_t<my_t> _span)
 
 	tree_node nodes[512];
 	size_t nodes_count = 0;
+	
 	uint16_t root_node = 0;
-
-
-
-
-
-	uint16_t heap[256];
-	size_t heap_size = 0;
-	std::span<uint16_t> heap_span;
-
-	auto update_heap_span = [&]
-	{
-		heap_span = std::span(heap, heap + heap_size);
-	};
-
-	auto node_id = [&]
-	(tree_node& node)
-	{
-		return uint16_t(&node - &nodes[0]);
-	};
-
-	auto heap_comparator = [&]
-	(uint16_t a, uint16_t b)
-	{
-		return nodes[a].count > nodes[b].count;
-	};
-
-	auto heap_append = [&]
-	(tree_node& node)
-	{
-		uint16_t id = node_id(node);
-		heap[heap_size++] = id;
-	};
-
-	auto heap_push = [&]
-	(tree_node& node)
-	{
-		heap_append(node);
-		update_heap_span();
-		std::ranges::push_heap(heap_span, heap_comparator);
-	};
-
-	auto heap_pop = [&]() -> auto&
-	{
-		std::ranges::pop_heap(heap_span, heap_comparator);
-		uint16_t id = heap[--heap_size];
-		update_heap_span();
-		return nodes[id];
-	};
-
-	auto buy_node = [&]() -> auto&
-	{
-		return nodes[nodes_count++];
-	};
-
 	size_t storage_size = 114;
-	for (size_t byte = 0; byte < 256; ++byte)
+
+
+
+
 	{
-		auto count = bytes_entry_counts[byte];
-		if (count == 0)
-			continue;
+		uint16_t heap[256];
+		size_t heap_size = 0;
+		std::span<uint16_t> heap_span;
 
-		auto& node = buy_node();
-		node.set_byte((uint8_t)byte, count);
-		heap_append(node);
-		storage_size += 9;
-	}
+		auto update_heap_span = [&]
+		{
+			heap_span = std::span(heap, heap + heap_size);
+		};
 
-	update_heap_span();
-	std::ranges::make_heap(heap_span, heap_comparator);
+		auto node_id = [&]
+		(tree_node& node)
+		{
+			return uint16_t(&node - &nodes[0]);
+		};
 
+		auto heap_comparator = [&]
+		(uint16_t a, uint16_t b)
+		{
+			return nodes[a].count > nodes[b].count;
+		};
 
-	storage_size += 19 * (heap_size - 1);
-	while (heap_size > 1)
-	{
-		auto& n1 = heap_pop();
-		auto& n2 = heap_pop();
-		auto& n3 = buy_node();
-		n3.count = n1.count + n2.count;
-		n3.set_children(node_id(n1), node_id(n2));
-		heap_push(n3);
-		root_node = node_id(n3);
+		auto heap_append = [&]
+		(tree_node& node)
+		{
+			uint16_t id = node_id(node);
+			heap[heap_size++] = id;
+		};
+
+		auto heap_push = [&]
+		(tree_node& node)
+		{
+			heap_append(node);
+			update_heap_span();
+			std::ranges::push_heap(heap_span, heap_comparator);
+		};
+
+		auto heap_pop = [&]() -> auto&
+		{
+			std::ranges::pop_heap(heap_span, heap_comparator);
+			uint16_t id = heap[--heap_size];
+			update_heap_span();
+			return nodes[id];
+		};
+
+		auto buy_node = [&]() -> auto&
+		{
+			return nodes[nodes_count++];
+		};
+
+		for (size_t byte = 0; byte < 256; ++byte)
+		{
+			auto count = bytes_entry_counts[byte];
+			if (count == 0)
+				continue;
+
+			auto& node = buy_node();
+			node.set_byte((uint8_t)byte, count);
+			heap_append(node);
+		}
+
+		update_heap_span();
+		std::ranges::make_heap(heap_span, heap_comparator);
+
+		{
+			const size_t byte_nodes = 9 * heap_size;
+			const size_t aux_nodes = 19 * (heap_size - 1);
+			storage_size += byte_nodes + aux_nodes;
+		}
+
+		while (heap_size > 1)
+		{
+			auto& n1 = heap_pop();
+			auto& n2 = heap_pop();
+			auto& n3 = buy_node();
+			n3.count = n1.count + n2.count;
+			n3.set_children(node_id(n1), node_id(n2));
+			heap_push(n3);
+			root_node = node_id(n3);
+		}
 	}
 
 
@@ -271,24 +284,52 @@ void huffman_compressor<in_t, ByteAlloc>::compress(in_span_t<my_t> _span)
 		uint8_t length;
 	} mappings[256];
 
-	auto byte_mapping_offset = [&]
-	(byte_mapping_data& mapping) -> auto&
-	{
-		return mapping.offset;
-	};
-	auto byte_mapping_length = [&]
-	(byte_mapping_data& mapping) -> auto&
-	{
-		return mapping.length;
-	};
+	uint8_t bitseq_storage[4112];
+	uint8_t bitseq_temp[32];
 
+	bit_iterator bitseq_storage_iterator(bitseq_storage);
+	bit_iterator bitseq_temp_iterator(bitseq_temp), bitseq_temp_begin = bitseq_temp_iterator;
 
 	size_t data_storage_size = 0;
-	for (int x = 0; x < 256; ++x)
+	auto traverse_node_tree = [&]
+	(this auto&& recursion, uint16_t node_index) -> void
 	{
-		auto count = bytes_entry_counts[x];
-		data_storage_size += mappings[x].length * count;
-	}
+		const auto& node = nodes[node_index];
+		const bool has_byte = node.has_byte();
+		if (has_byte)
+		{
+			const auto byte = node.get_byte();
+			auto& mapping = mappings[byte];
+
+			mapping.offset = bitseq_storage_iterator.bit;
+			mapping.length = safe_cast<uint8_t>(bitseq_temp_iterator.bit);
+			data_storage_size += mapping.length * bytes_entry_counts[byte];
+			bitseq_storage_iterator = bit_iterator_copy(bitseq_storage_iterator, bitseq_temp_begin, mapping.length);
+		}
+		else
+		{
+			const auto [left, right] = std::get<helper_node_data>(node.data);
+
+			bitseq_temp_iterator++.write(0);
+			recursion(left);
+			--bitseq_temp_iterator;
+
+			bitseq_temp_iterator++.write(1);
+			recursion(right);
+			--bitseq_temp_iterator;
+		}
+	};
+
+	__debugbreak();
+
+	traverse_node_tree(root_node);
+
+
+	//for (int x = 0; x < 256; ++x)
+	//{
+	//	auto count = bytes_entry_counts[x];
+	//	data_storage_size += mappings[x].length * count;
+	//}
 	storage_size += data_storage_size;
 
 
@@ -296,17 +337,25 @@ void huffman_compressor<in_t, ByteAlloc>::compress(in_span_t<my_t> _span)
 	this->buff.resize((storage_size + 7) / 8);
 	bit_iterator out(this->buff.data());
 
-	out = bit_stream_append_obj(out, (uint32_t)0x15269E85);
-	out = bit_stream_append_obj(out, (uint64_t)data_storage_size);
+	out = bit_stream_append_obj_aligned(out, (uint32_t)0x15269E85);
+	out = bit_stream_append_obj_aligned(out, (uint64_t)data_storage_size);
 	out = bit_stream_append_obj(out, nodes_count, 9);
 	out = bit_stream_append_obj(out, root_node, 9);
 
+	for (size_t i = 0; i < nodes_count; ++i)
+	{
+		const bool has_byte = nodes[i].has_byte();
+		out = bit_stream_append_obj(out, has_byte, 1);
 
-	uint8_t bitseq_storage[4112];
-	uint8_t bitseq_temp[32];
-
-	bit_iterator bitseq_storage_iterator(bitseq_storage);
-	bit_iterator bitseq_temp_iterator(bitseq_temp), bitseq_temp_begin = bitseq_temp_iterator;
+		if (has_byte)
+			out = bit_stream_append_obj(out, nodes[i].get_byte(), 8);
+		else
+		{
+			const auto [left, right] = std::get<helper_node_data>(nodes[i].data);
+			out = bit_stream_append_obj(out, left, 9);
+			out = bit_stream_append_obj(out, right, 9);
+		}
+	}
 
 
 	//TODO: put metadata
@@ -326,35 +375,6 @@ void huffman_compressor<in_t, ByteAlloc>::compress(in_span_t<my_t> _span)
 		data: 1 bit[n_data]: compressed data
 	*/
 
-	auto traverse_node_tree = [&]
-	(this auto&& recursion, uint16_t node_index) -> void
-	{
-		const auto& node = nodes[node_index];
-		const bool has_byte = node.has_byte();
-		//out = 
-		if (has_byte)
-		{
-			auto& mapping = mappings[node.get_byte()];
-
-			byte_mapping_length(mapping) = safe_cast<uint8_t>(bitseq_temp_iterator.bit);
-			byte_mapping_offset(mapping) = bitseq_storage_iterator.bit;
-			bitseq_storage_iterator = bit_iterator_copy(bitseq_storage_iterator, bitseq_temp_begin, mapping.length);
-		}
-		else
-		{
-			const auto [left, right] = std::get<helper_node_data>(node.data);
-
-			bitseq_temp_iterator++.write(0);
-			recursion(left);
-			--bitseq_temp_iterator;
-
-			bitseq_temp_iterator++.write(1);
-			recursion(right);
-			--bitseq_temp_iterator;
-		}
-	};
-
-	traverse_node_tree(root_node);
 
 
 	for (p = (uint8_t*)_span.data(); p != pe; ++p)
