@@ -132,7 +132,7 @@ class generic_matrix_t
 public:
 	using element_type = storage_t::element_type;
 
-	generic_matrix_t() = default;
+	constexpr generic_matrix_t() = default;
 
 	template<std::forward_iterator Iter>
 	constexpr generic_matrix_t(Iter begin, size_t count)
@@ -156,6 +156,11 @@ public:
 	{
 		return this->rows() * this->columns();
 	}
+
+	constexpr auto begin() noexcept { return this->storage.begin(); }
+	constexpr auto begin() const noexcept { return this->storage.begin(); }
+	constexpr auto end() noexcept { return this->storage.end(); }
+	constexpr auto end() const noexcept { return this->storage.end(); }
 
 	//auto&& operator()(this auto&& self, size_t row, size_t column = 0) noexcept { return self.storage(row)(column); };
 	constexpr element_type& operator()(size_t n, size_t m = 0) noexcept { return this->storage(n, m); }
