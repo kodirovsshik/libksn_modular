@@ -130,7 +130,7 @@ public:
 	const T* data() const noexcept;
 
 
-	//Лучше не вызывать лишний раз, производит полное копирование
+	//Expensive, performes full copy
 	void resize(index_sequence_ref);
 	size_t size() const noexcept;
 	index_sequence_ref size_dims() const noexcept;
