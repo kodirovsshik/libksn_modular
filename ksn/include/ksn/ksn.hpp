@@ -157,19 +157,25 @@ import <limits.h>;
 
 #elif !defined __KSN_DEBUG && !defined __KSN_RELEASE
 
-	#ifndef _KSN_NO_IS_DEBUG_WARNING
-		#error Failed to define _KSN_IS_DEBUG_BUILD because neither debug nor release macro is defined. \
-Define _KSN_IS_DEBUG_BUILD yourself to be 0 or 1 before any ksn header or reconfigure your project settings. \
-You can #define _KSN_NO_IS_DEBUG_WARNING to acknowledge the compiler that you've recived this warning (release build will be assumed)
+	#ifndef _KSN_IS_DEBUG_BUILD
+
+		#ifndef _KSN_NO_IS_DEBUG_WARNING
+			#error Failed to define _KSN_IS_DEBUG_BUILD because neither debug nor release macro is defined. \
+	Define _KSN_IS_DEBUG_BUILD yourself to be 0 or 1 in your project settings or reconfigure them to include _DEBUG or NDEBUG macros. \
+	You can #define _KSN_NO_IS_DEBUG_WARNING to acknowledge the compiler that you've recived this warning (release build will be assumed)
+		#endif
+
+		#define _KSN_IS_DEBUG_BUILD 0
+
 	#endif
 
-	#define _KSN_IS_DEBUG_BUILD 0
-
-#else //defined __KSN_DEBUG && defined __KSN_RELEASE
+#else //that is: defined __KSN_DEBUG && defined __KSN_RELEASE
 
 	#ifndef _KSN_IS_DEBUG_BUILD
+
 		#error Failed to define _KSN_IS_DEBUG_BUILD because both debug and release macros are defined. \
 Define _KSN_IS_DEBUG_BUILD yourself to be 0 or 1 before any ksn header or reconfigure your project settings
+
 	#endif
 
 #endif
@@ -229,10 +235,10 @@ Define _KSN_IS_DEBUG_BUILD yourself to be 0 or 1 before any ksn header or reconf
 #define _KSN_RERAISE []{ throw; }()
 #else
 #define _KSN_HAS_EXCEPTIONS 0
-#define _KSN_TRY if _KSN_CONSTEXPR_CONDITION (true) {
-#define _KSN_CATCH_UNNAMED(type) } else if _KSN_CONSTEXPR_CONDITION (false) {
-#define _KSN_CATCH(type, name) } else if _KSN_CONSTEXPR_CONDITION (false) { type name = *(std::add_pointer_t<std::remove_reference_t<type>>)nullptr;
-#define _KSN_CATCH_ALL } else if _KSN_CONSTEXPR_CONDITION (false) {
+#define _KSN_TRY if constexpr (true) {
+#define _KSN_CATCH_UNNAMED(type) } else if constexpr (false) {
+#define _KSN_CATCH(type, name) } else if constexpr (false) { type name = std::declval<type>();
+#define _KSN_CATCH_ALL } else if constexpr (false) {
 #define _KSN_CATCH_END }
 #define _KSN_RAISE(exception) abort()
 #define _KSN_RERAISE abort()
@@ -311,6 +317,16 @@ namespace ksn{
 
 	}
 
+
+	using i8 = int8_t;
+	using i16 = int16_t;
+	using i32 = int32_t;
+	using i64 = int64_t;
+
+	using u8 = uint8_t;
+	using u16 = uint16_t;
+	using u32 = uint32_t;
+	using u64 = uint64_t;
 }
 
 
