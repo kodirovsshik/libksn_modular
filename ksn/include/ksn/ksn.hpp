@@ -310,7 +310,7 @@ namespace ksn{
 	namespace detail{
 
 		template<bool test>
-		consteval void _ct_assert()
+			consteval void _ct_assert()
 		{
 			static_assert(test);
 		}
