@@ -109,8 +109,8 @@ public:
 	void set_modifier_keys_check_on_keyboard_event(bool check_enabled = true) noexcept;
 
 private:
-	window_impl m_impl;
 	window_common_impl m_common_impl;
+	window_impl m_impl;
 };
 
 

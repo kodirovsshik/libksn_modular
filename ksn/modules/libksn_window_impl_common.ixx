@@ -37,6 +37,11 @@ bool window_t::set_client_height(uint32_t h) noexcept
 {
 	return this->set_client_size(this->get_client_width(), h);
 }
+bool window_t::set_client_size(uint32_t width, uint32_t height) noexcept
+{
+	//TODO
+	return false;
+}
 int32_t window_t::get_client_x() const noexcept
 {
 	return this->get_client_position().first;

@@ -25,19 +25,11 @@ window_t::window_t() noexcept
 
 std::pair<uint32_t, uint32_t> window_t::get_client_size() const noexcept
 {
-	WINDOWINFO wi{};
-	wi.cbSize = sizeof(wi);
-	if (!GetWindowInfo(this->m_impl->m_window, &wi)) 
-		return { 0, 0 };
-	return { uint32_t(wi.rcClient.right - wi.rcClient.left), uint32_t(wi.rcClient.bottom - wi.rcClient.top) };
+	return this->m_impl->m_last_size;
 }
 std::pair<int32_t, int32_t> window_t::get_client_position() const noexcept
 {
-	WINDOWINFO wi{};
-	wi.cbSize = sizeof(wi);
-	if (!GetWindowInfo(this->m_impl->m_window, &wi)) 
-		return { 0, 0 };
-	return { int32_t(wi.rcClient.left), int32_t(wi.rcClient.top) };
+	return this->m_impl->m_last_pos;
 }
 
 
