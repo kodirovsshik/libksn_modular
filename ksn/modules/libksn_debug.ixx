@@ -63,7 +63,7 @@ instance_debugger::instance_debugger() noexcept
 instance_debugger::instance_debugger(int x) noexcept
 	: payload(x)
 {
-	log("instance_debugger(int)\n");
+	log("instance_debugger(int {})\n", x);
 }
 instance_debugger::instance_debugger(const instance_debugger& x)
 	: payload(x.payload)
@@ -97,6 +97,7 @@ instance_debugger& instance_debugger::operator=(instance_debugger&& other)
 
 instance_debugger::~instance_debugger()
 {
+	log("~instance_debugger(), payload = {}\n", this->payload);
 	this->test();
 }
 
