@@ -224,8 +224,8 @@ struct event_t
 
 		struct
 		{
-			int32_t x_new, y_new;
-			int32_t x_old, y_old;
+			i32 x_new, y_new;
+			i32 x_old, y_old;
 		} window_move_data;
 
 		struct
@@ -236,7 +236,7 @@ struct event_t
 
 		struct
 		{
-			int32_t x, y;
+			i32 x, y;
 		} mouse_move_data;
 
 		char32_t character;
@@ -324,8 +324,8 @@ struct resizemove_data_t
 {
 	struct
 	{
-		int32_t x_new, y_new;
-		int32_t x_old, y_old;
+		i32 x_new, y_new;
+		i32 x_old, y_old;
 	} window_move_data{};
 
 	struct

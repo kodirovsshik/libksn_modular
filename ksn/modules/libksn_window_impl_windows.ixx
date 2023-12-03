@@ -23,15 +23,24 @@ window_t::window_t() noexcept
 
 
 
-std::pair<uint32_t, uint32_t> window_t::get_client_size() const noexcept
+std::pair<u32, u32> window_t::get_client_size() const noexcept
 {
 	return this->m_impl->m_last_size;
 }
-std::pair<int32_t, int32_t> window_t::get_client_position() const noexcept
+std::pair<i32, i32> window_t::get_client_position() const noexcept
 {
 	return this->m_impl->m_last_pos;
 }
-
+bool window_t::set_client_size(u32 width, u32 height) noexcept
+{
+	//TODO
+	return false;
+}
+bool window_t::set_client_position(i32 x, i32 y) noexcept
+{
+	//TODO
+	return false;
+}
 
 
 
@@ -193,7 +202,7 @@ BOOL AdjustWindowRectInverse(LPRECT rect, DWORD dwStyle)
 {
 	RECT rc;
 	SetRectEmpty(&rc);
-	bool ok = AdjustWindowRect(&rc, dwStyle, false);
+	const bool ok = AdjustWindowRect(&rc, dwStyle, false);
 	if (ok)
 	{
 		rect->left -= rc.left;
@@ -204,25 +213,25 @@ BOOL AdjustWindowRectInverse(LPRECT rect, DWORD dwStyle)
 	return ok;
 }
 
-std::pair<uint32_t, uint32_t> adjust_size_to_client(int width, int height, HWND window)
+std::pair<u32, u32> adjust_size_to_client(int width, int height, HWND window)
 {
 	RECT rc{};
 	rc.right = width;
 	rc.bottom = height;
 	AdjustWindowRectInverse(&rc, GetWindowLong(window, GWL_STYLE));
-	return std::pair<uint32_t, uint32_t>
+	return std::pair<u32, u32>
 	{
-		(uint32_t)std::min<long>(rc.right - rc.left, UINT32_MAX),
-			(uint32_t)std::min<long>(rc.bottom - rc.top, UINT32_MAX)
+		(u32)std::min((i64)rc.right - rc.left, (i64)UINT32_MAX),
+		(u32)std::min((i64)rc.bottom - rc.top, (i64)UINT32_MAX)
 	};
 }
 
 struct minmax_info
 {
-	uint32_t width_min;
-	uint32_t width_max;
-	uint32_t height_min;
-	uint32_t height_max;
+	u32 width_min;
+	u32 width_max;
+	u32 height_min;
+	u32 height_max;
 };
 minmax_info GetSystemMetricsClient(HWND wnd)
 {
@@ -241,10 +250,10 @@ minmax_info GetSystemMetricsClient(HWND wnd)
 	AdjustWindowRectInverse(&rcmin, style);
 	AdjustWindowRectInverse(&rcmax, style);
 
-	info.width_min = (uint32_t)std::min<long>(rcmin.right - rcmin.left, UINT32_MAX);
-	info.width_max = (uint32_t)std::min<long>(rcmax.right - rcmax.left, UINT32_MAX);
-	info.height_min = (uint32_t)std::min<long>(rcmin.bottom - rcmin.top, UINT32_MAX);
-	info.height_max = (uint32_t)std::min<long>(rcmax.bottom - rcmax.top, UINT32_MAX);
+	info.width_min = (u32)std::min((i64)rcmin.right - rcmin.left, (i64)UINT32_MAX);
+	info.width_max = (u32)std::min((i64)rcmax.right - rcmax.left, (i64)UINT32_MAX);
+	info.height_min = (u32)std::min((i64)rcmin.bottom - rcmin.top, (i64)UINT32_MAX);
+	info.height_max = (u32)std::min((i64)rcmax.bottom - rcmax.top, (i64)UINT32_MAX);
 
 	return info;
 }
@@ -323,8 +332,8 @@ LRESULT WINAPI libksn_window_procedure(HWND wnd, UINT msg, WPARAM w, LPARAM l)
 			event_t ev; \
 			ev.type = is_pressed ? event_type_t::mouse_press : event_type_t::mouse_release; \
 			ev.mouse_button_data.button = mouse_button_t::_button; \
-			ev.mouse_button_data.x = (uint32_t)LOWORD(l); \
-			ev.mouse_button_data.y = (uint32_t)HIWORD(l); \
+			ev.mouse_button_data.x = (u32)LOWORD(l); \
+			ev.mouse_button_data.y = (u32)HIWORD(l); \
 			lock_event_queue(&win_impl); \
 			q.push_back(ev); \
 		}\
@@ -340,8 +349,8 @@ LRESULT WINAPI libksn_window_procedure(HWND wnd, UINT msg, WPARAM w, LPARAM l)
 			ev.type = vertical ? event_type_t::mouse_scroll_vertical : event_type_t::mouse_scroll_horizontal; \
 			ev.mouse_scroll_data.is_vertical = (msg == WM_MOUSEWHEEL); \
 			ev.mouse_scroll_data.delta = (float)(int16_t)HIWORD(w) / 120; \
-			ev.mouse_scroll_data.x = (uint32_t)pos.x; \
-			ev.mouse_scroll_data.y = (uint32_t)pos.y; \
+			ev.mouse_scroll_data.x = (u32)pos.x; \
+			ev.mouse_scroll_data.y = (u32)pos.y; \
  \
 			lock_event_queue(&win_impl);\
 			q.push_back(ev); \
@@ -457,11 +466,11 @@ LRESULT WINAPI libksn_window_procedure(HWND wnd, UINT msg, WPARAM w, LPARAM l)
 		RECT client_area;
 		GetClientRect(win_impl.m_window, &client_area);
 
-		win_impl.m_last_pos.first = (int32_t)client_area.left;
-		win_impl.m_last_pos.second = (int32_t)client_area.bottom;
+		win_impl.m_last_pos.first = (i32)client_area.left;
+		win_impl.m_last_pos.second = (i32)client_area.bottom;
 
-		win_impl.m_last_size.first = (uint32_t)(client_area.right - client_area.left);
-		win_impl.m_last_size.second = (uint32_t)(client_area.bottom - client_area.top);
+		win_impl.m_last_size.first = (u32)(client_area.right - client_area.left);
+		win_impl.m_last_size.second = (u32)(client_area.bottom - client_area.top);
 
 		win_impl.m_is_resizemove = true;
 	}
@@ -477,11 +486,11 @@ LRESULT WINAPI libksn_window_procedure(HWND wnd, UINT msg, WPARAM w, LPARAM l)
 		if (win_impl.m_is_clipping)
 			ClipCursor(&client_area);
 
-		uint32_t width = uint32_t(client_area.right - client_area.left);
-		uint32_t height = uint32_t(client_area.bottom - client_area.top);
+		u32 width = u32(client_area.right - client_area.left);
+		u32 height = u32(client_area.bottom - client_area.top);
 
-		auto new_size = std::pair<uint32_t, uint32_t>(width, height);
-		auto new_pos = std::pair<int32_t, int32_t>((int32_t)client_area.left, (int32_t)client_area.top);
+		auto new_size = std::pair<u32, u32>(width, height);
+		auto new_pos = std::pair<i32, i32>((i32)client_area.left, (i32)client_area.top);
 
 		win_impl.m_is_resizemove = false;
 
@@ -579,7 +588,7 @@ LRESULT WINAPI libksn_window_procedure(HWND wnd, UINT msg, WPARAM w, LPARAM l)
 			{
 				event_t ev;
 				ev.type = event_type_t::text;
-				ev.character = (uint32_t)w;
+				ev.character = (u32)w;
 
 				lock_event_queue(&win_impl);
 				q.push_back(ev);
@@ -596,7 +605,7 @@ LRESULT WINAPI libksn_window_procedure(HWND wnd, UINT msg, WPARAM w, LPARAM l)
 		{
 			event_t ev;
 			ev.type = event_type_t::text;
-			ev.character = (uint32_t)w;
+			ev.character = (u32)w;
 		}
 	}
 	break;
@@ -718,8 +727,8 @@ LRESULT WINAPI libksn_window_procedure(HWND wnd, UINT msg, WPARAM w, LPARAM l)
 			track_info.hwndTrack = win_impl.m_window;
 			TrackMouseEvent(&track_info);
 		}
-		int32_t x = (int32_t)LOWORD(l);
-		int32_t y = (int32_t)HIWORD(l);
+		i32 x = (i32)LOWORD(l);
+		i32 y = (i32)HIWORD(l);
 
 		ev.type = event_type_t::mouse_move;
 		ev.mouse_move_data.x = x;
@@ -784,9 +793,9 @@ const window_impl* window_impl::operator->() const noexcept
 
 void window_impl::ensure_size_constraints() noexcept
 {
-	auto size = this->m_ksn_window->get_client_size();
+	const auto size = this->m_ksn_window->get_client_size();
 
-	std::pair<uint32_t, uint32_t> new_size =
+	std::pair<u32, u32> new_size =
 	{
 		std::clamp(size.first, this->m_size_min.first, this->m_size_max.first),
 		std::clamp(size.second, this->m_size_min.second, this->m_size_max.second)

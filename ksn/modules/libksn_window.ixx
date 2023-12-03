@@ -21,7 +21,7 @@ public:
 	virtual ~window_t() noexcept;
 
 	window_t() noexcept;
-	window_t(window_t&&) noexcept;
+	window_t(window_t&&) = default;
 
 	window_t& operator=(window_t&&) noexcept;
 
@@ -30,8 +30,8 @@ public:
 
 
 
-	template<class char_t>
-	window_open_result_t open(uint32_t width, uint32_t height, const char_t* title = L"", window_style_t style = window_style::default_style) noexcept;
+	template<class char_t = char>
+	window_open_result_t open(u32 width, u32 height, const char_t* title = "", window_style_t style = window_style::default_style) noexcept;
 
 	void close() noexcept;
 
@@ -53,7 +53,7 @@ public:
 	float get_framerate_limit() const noexcept;
 
 	//Refresh rate of the monitor the OS considers window to be on
-	uint32_t get_current_monitor_refresh_rate() const noexcept;
+	u32 get_current_monitor_refresh_rate() const noexcept;
 
 	//Updates internal time counter and waits for a frame end according to set framerate
 	//Is a no-op if no frame rate limit is set
@@ -65,24 +65,24 @@ public:
 	void framerate_sync_hybrid() noexcept;
 
 
-	uint32_t get_client_width() const noexcept;
-	uint32_t get_client_height() const noexcept;
-	std::pair<uint32_t, uint32_t> get_client_size() const noexcept;
+	u32 get_client_width() const noexcept;
+	u32 get_client_height() const noexcept;
+	std::pair<u32, u32> get_client_size() const noexcept;
 
-	bool set_client_width(uint32_t) noexcept;
-	bool set_client_height(uint32_t) noexcept;
-	bool set_client_size(uint32_t width, uint32_t height) noexcept;
-	bool set_client_size(std::pair<uint32_t, uint32_t>) noexcept;
+	bool set_client_width(u32) noexcept;
+	bool set_client_height(u32) noexcept;
+	bool set_client_size(u32 width, u32 height) noexcept;
+	bool set_client_size(std::pair<u32, u32>) noexcept;
 
 
-	int32_t get_client_x() const noexcept;
-	int32_t get_client_y() const noexcept;
-	std::pair<int32_t, int32_t> get_client_position() const noexcept;
+	i32 get_client_x() const noexcept;
+	i32 get_client_y() const noexcept;
+	std::pair<i32, i32> get_client_position() const noexcept;
 
-	bool set_client_x(int32_t) noexcept;
-	bool set_client_y(int32_t) noexcept;
-	bool set_client_position(int32_t x, int32_t y) noexcept;
-	bool set_client_position(std::pair<int32_t, int32_t>) noexcept;
+	bool set_client_x(i32) noexcept;
+	bool set_client_y(i32) noexcept;
+	bool set_client_position(i32 x, i32 y) noexcept;
+	bool set_client_position(std::pair<i32, i32>) noexcept;
 
 
 	//Tries to center the window
@@ -98,13 +98,13 @@ public:
 	template<class char_t>
 	bool set_title(const char_t* name) const noexcept;
 
-	bool set_size_constraints(uint32_t min_width, uint32_t min_height, uint32_t max_width, uint32_t max_height) noexcept;
-	bool set_size_constraints(std::pair<uint32_t, uint32_t> min_size, std::pair<uint32_t, uint32_t> max_size) noexcept;
+	bool set_size_constraints(u32 min_width, u32 min_height, u32 max_width, u32 max_height) noexcept;
+	bool set_size_constraints(std::pair<u32, u32> min_size, std::pair<u32, u32> max_size) noexcept;
 
-	bool set_size_min_width(uint32_t) noexcept;
-	bool set_size_max_width(uint32_t) noexcept;
-	bool set_size_min_height(uint32_t) noexcept;
-	bool set_size_max_height(uint32_t) noexcept;
+	bool set_min_width(u32) noexcept;
+	bool set_max_width(u32) noexcept;
+	bool set_min_height(u32) noexcept;
+	bool set_max_height(u32) noexcept;
 
 	void set_modifier_keys_check_on_keyboard_event(bool check_enabled = true) noexcept;
 
@@ -114,7 +114,5 @@ private:
 };
 
 
-
-void swap(window_t& a, window_t& b) noexcept;
 
 _KSN_EXPORT_END

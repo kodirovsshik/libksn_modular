@@ -26,14 +26,14 @@ struct window_impl
 
 	window_resizemove_handle_t m_resizemove_handle = nullptr;
 
-	std::pair<uint32_t, uint32_t> m_last_size{};
-	std::pair<uint32_t, uint32_t> m_resizemove_last_size{};
+	std::pair<u32, u32> m_last_size{};
+	std::pair<u32, u32> m_resizemove_last_size{};
 
-	std::pair<int32_t, int32_t> m_last_pos{};
-	std::pair<int32_t, int32_t> m_resizemove_last_pos{};
+	std::pair<i32, i32> m_last_pos{};
+	std::pair<i32, i32> m_resizemove_last_pos{};
 
-	std::pair<uint32_t, uint32_t> m_size_min{};
-	std::pair<uint32_t, uint32_t> m_size_max = { UINT32_MAX, UINT32_MAX };
+	std::pair<u32, u32> m_size_min{};
+	std::pair<u32, u32> m_size_max = { UINT32_MAX, UINT32_MAX };
 
 	wchar_t m_pending_wchar = 0;
 
@@ -50,7 +50,7 @@ struct window_impl
 			bool m_is_thread_safe_events : 1;
 			mutable bool m_filled_on_init : 1;
 		};
-		uint32_t m_flags;
+		u32 m_flags;
 	};
 
 
