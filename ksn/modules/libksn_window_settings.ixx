@@ -14,30 +14,30 @@ _KSN_EXPORT_BEGIN
 
 
 #if nonempty_macro(Xw_WINAPI)
-class _Xw_WINAPI {};
+struct _Xw_WINAPI {};
 #endif
 
 #if nonempty_macro(Xw_XLIB)
 libksn_window_abort_compilation_to_unimplemented_feature("Xlib support");
-class _Xw_XLIB {};
+struct _Xw_XLIB {};
 #endif
 
 #if nonempty_macro(Xw_WAYLAND)
 libksn_window_abort_compilation_to_unimplemented_feature("Wayland support");
-class _Xw_WAYLAND {};
+struct _Xw_WAYLAND {};
 #endif
 
 
 
 #if nonempty_macro(Xg_NONE)
-class _Xg_NONE
+struct _Xg_NONE
 {
 	bool request_direct_drawing_support = false;
 };
 #endif
 
 #if nonempty_macro(Xg_OPENGL)
-class _Xg_OPENGL
+struct _Xg_OPENGL
 {
 	uint8_t ogl_version_major = 1;
 	uint8_t ogl_version_minor = 1;
@@ -48,12 +48,12 @@ class _Xg_OPENGL
 
 #if nonempty_macro(Xg_DIRECTX)
 libksn_window_abort_compilation_to_unimplemented_feature("DirectX support");
-class _Xg_DIRECTX {};
+struct _Xg_DIRECTX {};
 #endif
 
 #if nonempty_macro(Xg_VULKAN)
 libksn_window_abort_compilation_to_unimplemented_feature("Vulkan support");
-class _Xg_VULKAN {};
+struct _Xg_VULKAN {};
 #endif
 
 _KSN_EXPORT_END
@@ -76,7 +76,7 @@ enum class graphics_api {
 
 
 
-#define X(name, type) class settings_class_name(type, name),
+#define X(name, type) struct settings_class_name(type, name),
 using window_api_settings = std::variant<window_api, discard_trailing_comma(WINDOW_API_XLIST)>;
 using graphics_api_settings = std::variant<graphics_api, discard_trailing_comma(GRAPHICS_API_XLIST)>;
 
