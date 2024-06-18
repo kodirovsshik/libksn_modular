@@ -8,4 +8,6 @@ int main()
 	ogl.core_profile = true;
 
 	ksn::window_t win(ogl);
+
+	win.open(800, 600);
 }

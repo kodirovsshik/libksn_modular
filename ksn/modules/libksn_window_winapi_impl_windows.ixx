@@ -13,6 +13,7 @@ _KSN_EXPORT_BEGIN
 
 #define module_type window
 #define module_name winapi
+#define module_enum api_enum_from_type(module_type)
 
 #define impl_type impl_class_name(module_type, module_name)
 #define settings_type settings_class_name(module_type, module_name)
@@ -21,6 +22,8 @@ class impl_type
 {
 public:
 	impl_type(settings_type settings = {}) {} //TODO
+
+	static constexpr module_enum enum_val = module_enum::module_name;
 };
 
 _KSN_EXPORT_END

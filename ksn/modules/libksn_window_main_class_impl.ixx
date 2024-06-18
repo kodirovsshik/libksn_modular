@@ -7,7 +7,6 @@ module;
 export module libksn.window:main_module_impl;
 import :main_module;
 import :submodules_decl;
-//import :submodules_impl;
 
 
 
@@ -34,57 +33,65 @@ struct mapping_settings_visiter_t
 	}
 };
 
-_KSN_END
-
-
-
-_KSN_EXPORT_BEGIN
-
 auto graphics_impl_factory(graphics_api_settings settings)
 {
 	auto graphics_api_enum_visiter = []
 	(graphics_api choice) -> graphics_api_impl
-	{
-		switch(choice)
 		{
-		case graphics_api::none:
-			return graphics_api_none_impl();
+			switch (choice)
+			{
+			case graphics_api::none:
+				return graphics_api_none_impl();
 
 #if nonempty_macro(Xg_OPENGL)
-		case graphics_api::opengl:
-			return graphics_api_opengl_impl();
+			case graphics_api::opengl:
+				return graphics_api_opengl_impl();
 #endif
-		}
-		std::unreachable();
-	};
+			}
+			std::unreachable();
+		};
 
-	auto visiter = overload{ graphics_api_enum_visiter, mapping_settings_visiter_t<graphics_api_impl>() };
-	
+	auto visiter = overload{ graphics_api_enum_visiter, mapping_settings_visiter_t<graphics_api_impl>{} };
+
 	return std::visit(visiter, settings);
 }
 auto window_impl_factory(window_api_settings settings)
 {
 	auto window_api_enum_visiter = []
 	(window_api choice) -> window_api_impl
-	{
-		switch(choice)
 		{
+			switch (choice)
+			{
 #if nonempty_macro(Xw_WINAPI)
-		case window_api::winapi:
-			return window_api_winapi_impl();
+			case window_api::winapi:
+				return window_api_winapi_impl();
 #endif
-		}
-		std::unreachable();
-	};
+			}
+			std::unreachable();
+		};
 
-	auto visiter = overload{ window_api_enum_visiter, mapping_settings_visiter_t<window_api_impl>() };
-	
+	auto visiter = overload{ window_api_enum_visiter, mapping_settings_visiter_t<window_api_impl>{} };
+
 	return std::visit(visiter, settings);
 }
 
+_KSN_END
+
+
+
+_KSN_EXPORT_BEGIN
+
 window_t::window_t(graphics_api_settings graphics_settings, window_api_settings window_settings)
-	: impl_g(graphics_impl_factory(graphics_settings)), impl_w(window_impl_factory(window_settings))
+	: impl{ window_impl_factory(window_settings), graphics_impl_factory(graphics_settings) }
 {
 }
+template<class CharT>
+window_operation_result window_t::open(uint16_t width, uint16_t height, const CharT* title)
+{
+	return window_api_error::unimplemented;
+}
+
+//WHY DO I HAVE TO WRITE THAT TO MAKE MY MODULES LINK PROPERLY
+template window_operation_result window_t::open<char>(uint16_t width, uint16_t height, const char* title);
 
 _KSN_EXPORT_END

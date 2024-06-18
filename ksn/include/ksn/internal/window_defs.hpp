@@ -28,6 +28,9 @@
 
 #define compose_class_name(prefix, name, postfix) prefix ## _api_ ## name ## postfix
 
+#define api_enum_from_type1(prefix) prefix ## _api
+#define api_enum_from_type(prefix) api_enum_from_type1(prefix)
+
 #define settings_class_name(prefix, name) compose_class_name(prefix, name, _settings)
 #define impl_class_name(prefix, name) compose_class_name(prefix, name, _impl)
 
