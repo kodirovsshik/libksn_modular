@@ -12,7 +12,7 @@ import :submodules_impl;
 
 _KSN_EXPORT_BEGIN
 
-#define common_api_error_xlist X(unimplemented = 1)
+#define common_api_error_xlist unimplemented = 1
 #define window_api_error_xlist common_api_error_xlist 
 #define graphics_api_error_xlist common_api_error_xlist 
 
@@ -29,18 +29,20 @@ enum class graphics_api_error
 
 class window_operation_result
 {
-	std::optional<window_api_error> w;
-	std::optional<graphics_api_error> g;
+	std::variant<std::true_type, window_api_error, graphics_api_error> val = std::true_type{};
+
+	template<class T>
+	bool test(T x) const { return std::holds_alternative<T>(val) && std::get<T>(val) == x; }
 
 public:
 	window_operation_result() = default;
-	window_operation_result(window_api_error err) : w(err) {};
-	window_operation_result(graphics_api_error err) : g(err) {};
+	window_operation_result(window_api_error err) : val(err) {};
+	window_operation_result(graphics_api_error err) : val(err) {};
 
-	explicit operator bool() { return !w.has_value() && !g.has_value(); };
+	explicit operator bool() { return std::holds_alternative<std::true_type>(val); };
 
-	auto get_window_api_error() { return w; };
-	auto get_graphics_api_error() { return g; };
+	bool operator==(window_api_error w) const { return test(w); };
+	bool operator==(graphics_api_error g) const { return test(g); };
 };
 
 _KSN_EXPORT_END
