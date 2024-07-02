@@ -26,6 +26,8 @@
 #define nonempty_macro(...) (false __VA_OPT__(|| true))
 #define libksn_window_abort_compilation_to_unimplemented_feature(feature) static_assert(false, "libksn.window: " #feature " is not implemented")
 
+#define create_instantiation(T, sign, ...) template sign<T>(__VA_ARGS__)
+
 #define compose_class_name(prefix, name, postfix) prefix ## _api_ ## name ## postfix
 
 #define api_enum_from_type1(prefix) prefix ## _api

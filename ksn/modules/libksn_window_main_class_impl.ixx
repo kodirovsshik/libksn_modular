@@ -91,7 +91,8 @@ window_operation_result window_t::open(uint16_t width, uint16_t height, const Ch
 	return window_api_error::unimplemented;
 }
 
+#define create_window_open_instantiation(T) create_instantiation(T, window_operation_result window_t::open, uint16_t width, uint16_t height, const char* title)
 //WHY DO I HAVE TO WRITE THAT TO MAKE MY MODULES LINK PROPERLY
-template window_operation_result window_t::open<char>(uint16_t width, uint16_t height, const char* title);
+create_window_open_instantiation(char);
 
 _KSN_EXPORT_END

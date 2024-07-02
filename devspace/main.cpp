@@ -9,5 +9,9 @@ int main()
 
 	ksn::window_t win(ogl);
 
-	win.open(800, 600);
+	auto result = win.open(800, 600);
+	if (result == ksn::window_api_error::unimplemented)
+		return 1;
+	else if (!result)
+		return -1;
 }
