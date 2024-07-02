@@ -10,19 +10,6 @@ import :aux_decl;
 
 
 
-_KSN_BEGIN
-
-struct window_impl_storage
-{
-	window_api_impl window;
-	graphics_api_impl graphics;
-	//window_impl impl; //TODO: create common window impl interface
-};
-
-_KSN_END
-
-
-
 _KSN_EXPORT_BEGIN
 
 class window_t
@@ -34,9 +21,7 @@ public:
 	window_operation_result open(uint16_t width, uint16_t height, const CharT* title = "");
 
 private:
-	window_impl_storage impl;
+	struct window_impl_storage impl;
 };
 
 _KSN_EXPORT_END
-
-

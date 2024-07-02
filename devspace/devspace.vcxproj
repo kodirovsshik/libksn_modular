@@ -192,8 +192,8 @@
     <ClCompile Include="..\ksn\modules\libksn_window_graphics_none_impl_windows.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_main_class_decl.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_main_class_impl.ixx" />
-    <ClCompile Include="..\ksn\modules\libksn_window_modules_decl.ixx" />
-    <ClCompile Include="..\ksn\modules\libksn_window_modules_proxy.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_submodules_decl.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_submodules_proxy.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_opengl_impl_windows.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_settings.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_winapi_impl_windows.ixx" />

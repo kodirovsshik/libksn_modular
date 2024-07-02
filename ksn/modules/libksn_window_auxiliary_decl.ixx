@@ -5,16 +5,18 @@ module;
 #include <ksn/internal/window_defs.hpp>
 
 export module libksn.window:aux_decl;
+import :submodules_decl;
+import :submodules_impl;
 
 
 
 _KSN_EXPORT_BEGIN
 
-#define common_api_error_xlist X(unimplemented, = 1)
+#define common_api_error_xlist X(unimplemented = 1)
 #define window_api_error_xlist common_api_error_xlist 
 #define graphics_api_error_xlist common_api_error_xlist 
 
-#define X(name, init) name init,
+#define X(name) name,
 enum class window_api_error
 {
 	window_api_error_xlist
@@ -42,3 +44,14 @@ public:
 };
 
 _KSN_EXPORT_END
+
+_KSN_BEGIN
+
+struct window_impl_storage
+{
+	window_api_impl window;
+	graphics_api_impl graphics;
+	//window_impl impl; //TODO: create common window impl interface
+};
+
+_KSN_END
