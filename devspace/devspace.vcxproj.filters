@@ -18,17 +18,23 @@
     <Filter Include="Module Files\math">
       <UniqueIdentifier>{391987f3-e090-4c64-a5c6-71767771d69c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Module Files\window\base">
+    <Filter Include="Module Files\window\main class">
       <UniqueIdentifier>{d5d07c2b-9d6a-43f3-976b-3a62c1978a4d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Module Files\window\submodules">
+      <UniqueIdentifier>{4818058c-1a79-4ec1-b73b-b54e7cebe67f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module Files\window\proxy modules">
+      <UniqueIdentifier>{5d25e3c5-5816-4b52-a5e3-ed6fe11fdaef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module Files\window\submodules\auxillary">
+      <UniqueIdentifier>{4b8c3732-f401-42ef-8719-e8a80529755f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module Files\window\submodules\functional">
       <UniqueIdentifier>{67b0471e-061d-42de-abf8-0b3c1f27e2cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Module Files\window\submodules\windows">
+    <Filter Include="Module Files\window\submodules\functional\windows">
       <UniqueIdentifier>{4b0ce5d5-206f-4689-8c89-c78def3985b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Module Files\window\proxies">
-      <UniqueIdentifier>{5d25e3c5-5816-4b52-a5e3-ed6fe11fdaef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,31 +93,34 @@
       <Filter>Module Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_main_class_decl.ixx">
-      <Filter>Module Files\window\base</Filter>
+      <Filter>Module Files\window\main class</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_main_class_impl.ixx">
-      <Filter>Module Files\window\base</Filter>
+      <Filter>Module Files\window\main class</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_window_modules_decl.ixx">
-      <Filter>Module Files\window\submodules</Filter>
+    <ClCompile Include="..\ksn\modules\libksn_window_submodules_decl.ixx">
+      <Filter>Module Files\window\submodules\functional</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_winapi_impl_windows.ixx">
-      <Filter>Module Files\window\submodules\windows</Filter>
+      <Filter>Module Files\window\submodules\functional\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window.ixx">
-      <Filter>Module Files\window\proxies</Filter>
+      <Filter>Module Files\window\proxy modules</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_window_modules_proxy.ixx">
-      <Filter>Module Files\window\proxies</Filter>
+    <ClCompile Include="..\ksn\modules\libksn_window_submodules_proxy.ixx">
+      <Filter>Module Files\window\proxy modules</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_graphics_none_impl_windows.ixx">
-      <Filter>Module Files\window\submodules\windows</Filter>
+      <Filter>Module Files\window\submodules\functional\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_opengl_impl_windows.ixx">
-      <Filter>Module Files\window\submodules\windows</Filter>
+      <Filter>Module Files\window\submodules\functional\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_auxiliary_decl.ixx">
+      <Filter>Module Files\window\submodules\auxillary</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_settings.ixx">
-      <Filter>Module Files\window\base</Filter>
+      <Filter>Module Files\window\submodules\auxillary</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
