@@ -189,13 +189,14 @@
     <ClCompile Include="..\ksn\modules\libksn_unicode.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_auxiliary_decl.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_error_decl.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_graphics_none_impl_windows.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_main_class_decl.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_main_class_impl.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_submodules_decl.ixx" />
-    <ClCompile Include="..\ksn\modules\libksn_window_submodules_proxy.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_submodules.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_opengl_impl_windows.ixx" />
-    <ClCompile Include="..\ksn\modules\libksn_window_settings.ixx" />
+    <ClCompile Include="..\ksn\modules\libksn_window_settings_decl.ixx" />
     <ClCompile Include="..\ksn\modules\libksn_window_winapi_impl_windows.ixx" />
     <ClCompile Include="..\ksn\modules\test.ixx" />
     <ClCompile Include="main.cpp" />

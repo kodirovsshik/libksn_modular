@@ -40,7 +40,7 @@ struct _Xg_NONE
 struct _Xg_OPENGL
 {
 	uint8_t ogl_version_major = 1;
-	uint8_t ogl_version_minor = 1;
+	uint8_t ogl_version_minor = 0;
 	bool core_profile = false;
 	bool debug_profile = false;
 };

@@ -6,6 +6,7 @@ module;
 
 export module libksn.window:submodule_opengl;
 import :settings_decl;
+import :error_decl;
 
 
 
@@ -24,6 +25,16 @@ public:
 	impl_type(settings_type settings = {}) {} //TODO
 
 	static constexpr module_enum enum_val = module_enum::module_name;
+
+	template<class window_api_t>
+	window_operation_result open(u16 width, u16 height, const window_api_t& window_api_impl)
+	{
+		return graphics_api_error::unimplemented;
+	}
+
+	void close()
+	{
+	}
 };
 
 _KSN_EXPORT_END

@@ -327,6 +327,15 @@ namespace ksn{
 	using u16 = uint16_t;
 	using u32 = uint32_t;
 	using u64 = uint64_t;
+
+
+
+	struct uncopyable
+	{
+		uncopyable() = default;
+		uncopyable(const uncopyable&) = delete;
+		uncopyable& operator=(const uncopyable&) = delete;
+	};
 }
 
 

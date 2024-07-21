@@ -6,6 +6,7 @@ module;
 
 export module libksn.window:submodule_graphics_none;
 import :settings_decl;
+import :error_decl;
 
 
 
@@ -20,10 +21,24 @@ _KSN_EXPORT_BEGIN
 
 class impl_type
 {
+	bool direct_draw;
+
 public:
-	impl_type(settings_type settings = {}) {} //TODO
+	impl_type(settings_type settings = {}) : direct_draw(settings.request_direct_drawing_support)
+	{
+	}
 
 	static constexpr module_enum enum_val = module_enum::module_name;
+
+	template<class window_api_t>
+	window_operation_result open(u16 width, u16 height, const window_api_t&)
+	{
+		return this->direct_draw ? graphics_api_error::unimplemented : window_operation_result{};
+	}
+
+	void close()
+	{
+	}
 };
 
 _KSN_EXPORT_END

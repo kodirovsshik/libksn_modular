@@ -36,6 +36,12 @@
     <Filter Include="Module Files\window\submodules\functional\windows">
       <UniqueIdentifier>{4b0ce5d5-206f-4689-8c89-c78def3985b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Module Files\window\submodules\functional\windows\window">
+      <UniqueIdentifier>{46de766b-a64a-47fb-ba2b-a531157793ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module Files\window\submodules\functional\windows\graphics">
+      <UniqueIdentifier>{4c97efcc-8841-4199-9647-799df84a420b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\ksn\modules\test.ixx">
@@ -101,26 +107,29 @@
     <ClCompile Include="..\ksn\modules\libksn_window_submodules_decl.ixx">
       <Filter>Module Files\window\submodules\functional</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_window_winapi_impl_windows.ixx">
-      <Filter>Module Files\window\submodules\functional\windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window.ixx">
       <Filter>Module Files\window\proxy modules</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_window_submodules_proxy.ixx">
+    <ClCompile Include="..\ksn\modules\libksn_window_submodules.ixx">
       <Filter>Module Files\window\proxy modules</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_window_graphics_none_impl_windows.ixx">
-      <Filter>Module Files\window\submodules\functional\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_window_opengl_impl_windows.ixx">
-      <Filter>Module Files\window\submodules\functional\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\ksn\modules\libksn_window_auxiliary_decl.ixx">
       <Filter>Module Files\window\submodules\auxillary</Filter>
     </ClCompile>
-    <ClCompile Include="..\ksn\modules\libksn_window_settings.ixx">
+    <ClCompile Include="..\ksn\modules\libksn_window_settings_decl.ixx">
       <Filter>Module Files\window\submodules\auxillary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_error_decl.ixx">
+      <Filter>Module Files\window\submodules\auxillary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_winapi_impl_windows.ixx">
+      <Filter>Module Files\window\submodules\functional\windows\window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_graphics_none_impl_windows.ixx">
+      <Filter>Module Files\window\submodules\functional\windows\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_window_opengl_impl_windows.ixx">
+      <Filter>Module Files\window\submodules\functional\windows\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
