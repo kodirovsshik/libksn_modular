@@ -36,6 +36,11 @@
 #define settings_class_name(prefix, name) compose_class_name(prefix, name, _settings)
 #define impl_class_name(prefix, name) compose_class_name(prefix, name, _impl)
 
+#define variant_visit(v, lambda) std::visit(lambda, v)
+#define _variant_generic_helper(capture, argT, v, f, ...) variant_visit(v, [capture](argT _v) { return _v.f(__VA_ARGS__); })
+#define variant_invoke(v, f, ...) _variant_generic_helper(=, auto&&, v, f __VA_OPT__(,) __VA_ARGS__)
+#define variant_invoke_ref(v, f, ...) _variant_generic_helper(&, auto&&, v, f __VA_OPT__(,) __VA_ARGS__)
+
 
 
 #define Xw(name) X(name, window)

@@ -336,6 +336,11 @@ namespace ksn{
 		uncopyable(const uncopyable&) = delete;
 		uncopyable& operator=(const uncopyable&) = delete;
 	};
+
+
+
+	template<class... Bases>
+	struct overload : public Bases... {};
 }
 
 

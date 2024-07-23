@@ -12,11 +12,6 @@ import :submodules_decl;
 
 _KSN_BEGIN
 
-template<class... Bases>
-struct overload : public Bases...
-{
-};
-
 template<class settings_t, class impl_t>
 concept some_api_settings = requires(settings_t settings)
 {
@@ -81,12 +76,12 @@ _KSN_END
 
 _KSN_EXPORT_BEGIN
 
-window_t::window_t(graphics_api_settings graphics_settings, window_api_settings window_settings) noexcept
+window::window(graphics_api_settings graphics_settings, window_api_settings window_settings) noexcept
 	: impl{ window_impl_factory(window_settings), graphics_impl_factory(graphics_settings) }
 {
 }
 template<class CharT>
-window_operation_result window_t::open(u16 width, u16 height, const CharT* title) noexcept
+window_operation_result window::open(u16 width, u16 height, const CharT* title) noexcept
 {
 	this->close();
 
@@ -103,32 +98,29 @@ window_operation_result window_t::open(u16 width, u16 height, const CharT* title
 	return visit_result;
 }
 
-void window_t::close() noexcept
+void window::close() noexcept
 {
-	std::visit([](auto& window_api, auto& graphics_api) 
-		{ graphics_api.close(); window_api.close(); },
-		this->impl.window, this->impl.graphics
+	variant_invoke(this->impl.graphics, close);
+	variant_invoke(this->impl.window, close);
+}
+
+auto get_api_type(const auto& api_holder)
+{
+	return variant_visit(api_holder, [](const auto& api)
+		{ return std::remove_cvref_t<decltype(api)>::enum_val; }
 	);
 }
 
-auto get_api_type(const auto& api)
-{
-	return std::visit([](const auto& window_api)
-		{ return std::remove_cvref_t<decltype(window_api)>::enum_val; },
-		api
-	);
-}
-
-window_api window_t::get_window_api_type() const noexcept
+window_api window::get_window_api_type() const noexcept
 {
 	return get_api_type(this->impl.window);
 }
-graphics_api window_t::get_graphics_api_type() const noexcept
+graphics_api window::get_graphics_api_type() const noexcept
 {
 	return get_api_type(this->impl.graphics);
 }
 
-#define create_window_open_instantiation(T) create_instantiation(T, window_operation_result window_t::open, noexcept, uint16_t width, uint16_t height, const char* title)
+#define create_window_open_instantiation(T) create_instantiation(T, window_operation_result window::open, noexcept, uint16_t width, uint16_t height, const char* title)
 //WHY DO I HAVE TO WRITE THAT TO MAKE MY MODULES LINK PROPERLY
 create_window_open_instantiation(char);
 

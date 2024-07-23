@@ -12,10 +12,10 @@ import :aux_decl;
 
 _KSN_EXPORT_BEGIN
 
-class window_t : public uncopyable
+class window : public uncopyable
 {
 public:
-	window_t(graphics_api_settings = ksn::graphics_api::default_, window_api_settings = ksn::window_api::default_) noexcept;
+	window(graphics_api_settings = ksn::graphics_api::default_, window_api_settings = ksn::window_api::default_) noexcept;
 
 	template<class CharT = char>
 	window_operation_result open(u16 width, u16 height, const CharT* title = "") noexcept;
