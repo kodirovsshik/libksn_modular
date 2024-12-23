@@ -40,6 +40,9 @@ private:
 public:
 	using storage_type = storage_t;
 
+	using iterator = storage_t::iterator;
+	using const_iterator = storage_t::const_iterator;
+
 	constexpr long_integer() = default;
 	constexpr long_integer(const my_t&) = default;
 	constexpr long_integer(my_t&&) = default;
@@ -74,6 +77,9 @@ public:
 
 	my_t& operator++();
 	my_t& operator--();
+
+	my_t operator++(int);
+	my_t operator--(int);
 
 	template<bool sign2, class st2>
 	constexpr my_t& operator+=(const long_integer<sign2, st2>& x);
@@ -212,11 +218,13 @@ inline consteval bool long_integer<p_is_signed, storage_t>::is_resizable() noexc
 template<bool p_is_signed, long_integer_storage storage_t>
 constexpr size_t long_integer<p_is_signed, storage_t>::actual_size() const noexcept
 {
+	auto& self = *this;
+
 	size_t nonsign_idx = this->size() - 1;
 	uint64_t x;
 	while (nonsign_idx != -1)
 	{
-		x = (*this)[nonsign_idx];
+		x = self[nonsign_idx];
 		if (x != this->sign_u64())
 			break;
 		--nonsign_idx;
@@ -453,9 +461,6 @@ constexpr void addsub(
 	const long_integer<signed2, st2>& b,
 	long_integer<signed3, st3>& c)
 {
-	size_t n1 = a.size(), n2 = b.size();
-	size_t n;
-	
 	if constexpr (add)
 	{
 		if (n1 < n2)
@@ -464,6 +469,9 @@ constexpr void addsub(
 
 	const uint64_t sign1 = a.sign_u64();
 	const uint64_t sign2 = b.sign_u64();
+	
+	size_t n1 = a.size(), n2 = b.size();
+	size_t n;
 
 	if constexpr (c.is_resizable())
 	{
@@ -626,7 +634,7 @@ void multiply(
 	long_multiply(a, b, c);
 
 	if constexpr (c.is_resizable())
-		c.resize(c.actual_size());
+		c.shrink();
 }
 
 _KSN_END
@@ -651,7 +659,7 @@ template<long_integer_storage st1, long_integer_storage st2>
 using combined_storage_t = combined_storage<st1, st2>::type;
 
 template<bool sign1, bool sign2, class st1, class st2>
-using combined_integer_t = long_integer<sign1&& sign2, combined_storage_t<st1, st2>>;
+using combined_integer_t = long_integer<sign1 && sign2, combined_storage_t<st1, st2>>;
 
 _KSN_END
 
@@ -719,6 +727,22 @@ auto long_integer<p_is_signed, storage_t>::operator--() -> my_t&
 	return *this;
 }
 
+template<bool p_is_signed, long_integer_storage storage_t>
+auto long_integer<p_is_signed, storage_t>::operator++(int) -> my_t
+{
+	auto copy = *this;
+	++*this;
+	return copy;
+}
+
+template<bool p_is_signed, long_integer_storage storage_t>
+auto long_integer<p_is_signed, storage_t>::operator--(int) -> my_t
+{
+	auto copy = *this;
+	--*this;
+	return copy;
+}
+
 _KSN_EXPORT_END
 
 
@@ -739,8 +763,8 @@ auto& operator<<(std::basic_ostream<char_t, traits_t>& os, ksn::long_integer<is_
 {
 	x.shrink();
 
-	bool negative = x.sign_u64();
-	if (negative)
+	const bool is_negative = x.sign_u64();
+	if (is_negative)
 		x.negate();
 
 	std::vector<char_t> v;
@@ -751,9 +775,9 @@ auto& operator<<(std::basic_ostream<char_t, traits_t>& os, ksn::long_integer<is_
 
 	extern const char put10_4[];
 
-	while (x.size())
+	while (true)
 	{
-		if (x.size() == 1 && x[0] < 1000)
+		if (x.size() == 0 || x.size() == 1 && x[0] < 1000)
 			break;
 		uint64_t rem = single_digit_udivide_and_get_remainder_ct<M>(x);
 		auto* p = &put10_4[(size_t)rem * k];
@@ -768,7 +792,7 @@ auto& operator<<(std::basic_ostream<char_t, traits_t>& os, ksn::long_integer<is_
 		v.push_back('0' + (char)rem);
 	}
 
-	if (negative)
+	if (is_negative)
 		v.push_back('-');
 
 	std::ranges::reverse(v);
