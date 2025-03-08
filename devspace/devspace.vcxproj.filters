@@ -131,6 +131,9 @@
     <ClCompile Include="..\ksn\modules\libksn_window_opengl_impl_windows.ixx">
       <Filter>Module Files\window\submodules\functional\windows\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\ksn\modules\libksn_aads.ixx">
+      <Filter>Module Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ksn\include\ksn\ksn.hpp">
